@@ -1,7 +1,7 @@
 import { resolve } from 'path'
 import { UserConfig } from 'vite'
 import reactRefresh from '@vitejs/plugin-react-refresh'
-import minifyHTML from './plugins/minifyHtml'
+import minifyHTML from './plugins/minify-html'
 
 const config: UserConfig = {
   resolve: {

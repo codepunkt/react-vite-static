@@ -13,6 +13,9 @@ const config: UserConfig = {
   esbuild: {
     jsxInject: `import React from 'react'`,
   },
+  build: {
+    minify: true,
+  },
 }
 
 export default config

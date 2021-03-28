@@ -2,17 +2,15 @@ import { resolve } from 'path'
 import { UserConfig } from 'vite'
 import reactRefresh from '@vitejs/plugin-react-refresh'
 import { minifyHtml } from 'vite-plugin-html'
-import { markdown } from './internal/plugins/markdown'
+import { wilson } from './internal/plugins/wilson'
+import wilsonConfig from './.wilson/wilson.config'
 
 const config: UserConfig = {
-  resolve: {
-    alias: [{ find: '~/', replacement: `${resolve(__dirname, 'src')}/` }],
-  },
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom'],
   },
   plugins: [
-    markdown(),
+    wilson(wilsonConfig),
     reactRefresh(),
     minifyHtml({
       removeComments: false,

@@ -7,6 +7,7 @@
     "noUnusedLocals": true,
     "esModuleInterop": true,
     "isolatedModules": true,
+    "resolveJsonModule": true,
     "outDir": "dist",
     "module": "commonjs",
     "lib": ["ESNext", "DOM"],

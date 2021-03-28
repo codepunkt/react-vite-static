@@ -1,6 +1,8 @@
-import { ensureDir, readFile, writeFile } from 'fs-extra'
+import { ensureDir, readFile, stat, writeFile } from 'fs-extra'
 import { resolve } from 'path'
 import readdirp from 'readdirp'
+import chalk from 'chalk'
+import packageJson from '../package.json'
 
 interface Page {
   sourcePath: string
@@ -12,10 +14,7 @@ const toAbsolute = (p: string) => resolve(__dirname, p)
 
 ;(async () => {
   try {
-    const template = await readFile(
-      toAbsolute('../dist/static/index.html'),
-      'utf-8'
-    )
+    const template = await readFile(toAbsolute('../dist/index.html'), 'utf-8')
 
     // collect pages
     const pages: Page[] = []
@@ -33,19 +32,21 @@ const toAbsolute = (p: string) => resolve(__dirname, p)
     }
 
     // pre-render each page
+    console.log(
+      `${chalk.cyan(`wilson v${packageJson.version}`)} ${chalk.green(
+        'generating static pages...'
+      )}`
+    )
     for (const page of pages) {
       const context = {}
-      const renderFn = require('../dist/server/entry-server.js').render
+      const renderFn = require('../.wilson/tmp/server/entry-server.js').render
       const renderedHtml = await renderFn(page.url, context)
       const html = template.replace(`<!--app-html-->`, renderedHtml)
-      await ensureDir(
-        toAbsolute(`../dist/static/${page.htmlPath}`).replace(
-          /\/index\.html$/,
-          ''
-        )
-      )
-      await writeFile(toAbsolute(`../dist/static/${page.htmlPath}`), html)
-      console.log('pre-rendered:', page)
+      const filePath = toAbsolute(`../dist/${page.htmlPath}`)
+      await ensureDir(filePath.replace(/\/index\.html$/, ''))
+      await writeFile(filePath, html)
+      const size = `${((await stat(filePath)).size / 1024).toFixed(2)}kb`
+      console.log(`dist/${page.htmlPath}`, size)
     }
   } catch (e) {
     console.log(e)

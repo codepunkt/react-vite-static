@@ -3,51 +3,31 @@ import { getConfig } from '../config'
 
 import { ensureDir, emptyDir, readFile, stat, writeFile } from 'fs-extra'
 import { resolve } from 'path'
-import readdirp from 'readdirp'
 import chalk from 'chalk'
 import packageJson from '../../package.json'
-import { collectPageData } from '../collectPageData'
-
-interface Page {
-  sourcePath: string
-  url: string
-  htmlPath: string
-}
+import { collectPageData, Page } from '../collectPageData'
 
 const toAbsolute = (path: string) => resolve(process.cwd(), path)
 
 async function prerender() {
-  const pages: Page[] = []
-
   try {
-    const template = await readFile(toAbsolute('./dist/index.html'), 'utf-8')
+    const pages: Page[] = JSON.parse(
+      await readFile(toAbsolute('./.wilson/tmp/page-data.json'), 'utf-8')
+    )
 
-    // collect pages
-    for await (const entry of readdirp(toAbsolute('./src/pages'))) {
-      const sourcePath = entry.path
-      const url = `/${sourcePath
-        .replace(/\.(tsx|md)$/, '')
-        .toLowerCase()
-        .replace(/index$/, '')}/`.replace(/\/\/$/, '/')
-      const htmlPath =
-        url.split('/').pop() === 'index'
-          ? `${url.replace(/^\//, '')}.html`
-          : `${url.replace(/^\//, '')}index.html`
-      pages.push({ sourcePath, url, htmlPath })
-    }
-
-    // pre-render each page
     console.log(
       `${chalk.cyan(`wilson v${packageJson.version}`)} ${chalk.green(
         'generating static pages...'
       )}`
     )
+
     for (const page of pages) {
       const context = {}
       const renderFn = require(toAbsolute(
         './.wilson/tmp/server/entry-server.js'
       )).render
       const renderedHtml = await renderFn(page.url, context)
+      const template = await readFile(toAbsolute('./dist/index.html'), 'utf-8')
       const html = template.replace(`<!--app-html-->`, renderedHtml)
       const filePath = toAbsolute(`./dist/${page.htmlPath}`)
       await ensureDir(filePath.replace(/\/index\.html$/, ''))
@@ -58,18 +38,15 @@ async function prerender() {
   } catch (e) {
     console.log(e)
   }
-
-  return pages
 }
 
 export async function generate() {
   await emptyDir(`${process.cwd()}/.wilson/tmp`)
 
   await collectPageData()
-
   const serverResult = await build(getConfig(true))
   const clientResult = await build(getConfig(false))
-  const prerenderResult = await prerender()
+  await prerender()
 
-  return [clientResult, serverResult, prerenderResult]
+  return [clientResult, serverResult]
 }

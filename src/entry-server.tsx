@@ -1,12 +1,10 @@
-import ReactDOMServer from 'react-dom/server'
-import { StaticRouter } from 'react-router-dom'
-import { StaticRouterContext } from 'react-router'
+import renderToString from 'preact-render-to-string'
 import { App } from './components/App'
+import prepass from 'preact-ssr-prepass'
 
-export function render(url: string, context: StaticRouterContext) {
-  return ReactDOMServer.renderToString(
-    <StaticRouter location={url} context={context}>
-      <App />
-    </StaticRouter>
-  )
+export async function render(url: string) {
+  const vnode = <App url={url} />
+
+  await prepass(vnode)
+  return renderToString(vnode)
 }

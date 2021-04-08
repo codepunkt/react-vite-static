@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom'
 import { markdownPages } from 'wilson/virtual'
+import { Link } from 'preact-router/match'
 
 export default function WritingPage() {
   return (
@@ -8,7 +8,7 @@ export default function WritingPage() {
       {markdownPages.map(({ result: { url }, frontmatter }) => {
         return (
           <li key={url}>
-            <Link to={url}>{frontmatter?.title ?? url}</Link>
+            <Link href={url}>{frontmatter?.title ?? url}</Link>
           </li>
         )
       })}

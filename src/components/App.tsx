@@ -1,18 +1,19 @@
-import { Route, Switch } from 'react-router-dom'
 import './App.scss'
 import Header from './Header'
 import { routes } from 'wilson/virtual'
+import Router, { Route } from 'preact-router'
+import { FunctionalComponent } from 'preact'
 
-export function App() {
+const NotFound: FunctionalComponent = () => <h1>not found.</h1>
+
+export const App: FunctionalComponent<{ url?: string }> = ({ url }) => {
   return (
     <>
       <Header />
-      <Switch>
+      <Router url={url}>
         {routes}
-        <Route>
-          <h1>Not Found</h1>
-        </Route>
-      </Switch>
+        <Route default component={NotFound} />
+      </Router>
     </>
   )
 }

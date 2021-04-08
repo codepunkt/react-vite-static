@@ -86,11 +86,10 @@ export async function generateStaticPages() {
     for (const page of pages) {
       const sourcePath = `src/pages/${page.source.path}`
       const deps = getDependencies(manifest, sourcePath)
-      const context = {}
       const renderFn = require(toAbsolute(
         './.wilson/tmp/server/entry-server.js'
       )).render
-      const appHtml = await renderFn(page.result.url, context)
+      const appHtml = await renderFn(page.result.url)
       const scriptTags = deps.js
         .filter((path) => !template.match(new RegExp(`(href|src)=/${path}`)))
         .map((path) => `<script type=module crossorigin src=/${path}></script>`)

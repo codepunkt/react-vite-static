@@ -1,16 +1,16 @@
-import { ReactNode } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from 'preact-router/match'
+import { ComponentChildren } from 'preact'
 
 interface Props {
-  children?: ReactNode
+  children?: ComponentChildren
 }
 
 function Menu() {
   return (
     <>
-      <Link to="/">Home</Link>
-      <Link to="/writing">Writing</Link>
-      <Link to="/about">About</Link>
+      <Link href="/">Home</Link>
+      <Link href="/writing/">Writing</Link>
+      <Link href="/about/">About</Link>
     </>
   )
 }

@@ -11,12 +11,12 @@ import {
   AssetURLTagConfig,
   collectAndReplaceAssetUrls,
 } from './transformAssetUrls'
-import { readFile } from 'fs-extra'
 import { Page } from 'src'
 import { transformSync } from '@babel/core'
 import { LoadResult, ResolveIdResult, TransformResult } from 'rollup'
 // @ts-ignore
 import presetPreact from 'babel-preset-preact'
+import { readJson, toRoot } from './util'
 
 export interface WilsonOptions {
   /**
@@ -50,7 +50,7 @@ const defaultOptions: Required<WilsonOptions> = {
   markdownLayouts: [
     {
       pattern: '**',
-      component: `${process.cwd()}/src/components/MarkdownLayout`,
+      component: toRoot('/src/components/MarkdownLayout'),
     },
   ],
 }
@@ -173,9 +173,7 @@ const corePlugin = (opts: WilsonOptions = {}): Plugin => {
      */
     async load(id: string): Promise<LoadResult> {
       if (id.startsWith('wilson/virtual')) {
-        const pages: Page[] = JSON.parse(
-          await readFile(`${process.cwd()}/.wilson/tmp/page-data.json`, 'utf-8')
-        )
+        const pages: Page[] = await readJson('./.wilson/tmp/page-data.json')
         const markdownPages = JSON.stringify(
           pages.filter((page) => page.type === 'markdown')
         )
@@ -187,9 +185,9 @@ const corePlugin = (opts: WilsonOptions = {}): Plugin => {
           pages
             .map(
               (page, i) =>
-                `const Page${i} = lazy(() => import('${`${process.cwd()}/src/pages/${
-                  page.source.path
-                }`}'));`
+                `const Page${i} = lazy(() => import('${toRoot(
+                  `/src/pages/${page.source.path}`
+                )}'));`
             )
             .join('\n') +
           `const routes = [` +

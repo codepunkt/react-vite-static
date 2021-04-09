@@ -1,6 +1,6 @@
-import { dirname, extname, resolve } from 'path'
-import { ensureDir, readFile, writeFile } from 'fs-extra'
+import { extname } from 'path'
 import { Page } from './collectPageData'
+import { readFile, toRoot, readJson, writeFile } from './util'
 
 // @TODO: read types from updated vite version, PR #2901
 // https://github.com/vitejs/vite/pull/2901
@@ -22,10 +22,15 @@ interface Dependencies {
   assets: string[]
 }
 
-const toAbsolute = (path: string) => resolve(process.cwd(), path)
-const filterExistingTags = (template: string) => (path: string) => {
-  return !template.match(new RegExp(`(href|src)=/${path}`))
-}
+type PrerenderFn = (
+  url: string
+) => Promise<{
+  html: string
+  links: Set<string>
+}>
+
+const filterExistingTags = (template: string) => (path: string) =>
+  !template.match(new RegExp(`(href|src)=/${path}`))
 
 function getDependencies(manifest: Manifest, pagePath: string): Dependencies {
   // add dependencies to sets to get rid of duplicates
@@ -77,26 +82,18 @@ function getAssetDependencies(manifest: Manifest, paths: string[]): string[] {
 // @TODO log files similar to vite
 export async function prerenderStaticPages() {
   try {
-    const pages: Page[] = JSON.parse(
-      await readFile(toAbsolute('./.wilson/tmp/page-data.json'), 'utf-8')
-    )
-    const manifest: Manifest = JSON.parse(
-      await readFile(toAbsolute('./dist/manifest.json'), 'utf-8')
-    )
-    const template = await readFile(toAbsolute('./dist/index.html'), 'utf-8')
+    const pages = await readJson<Page[]>('./.wilson/tmp/page-data.json')
+    const manifest = await readJson<Manifest>('./dist/manifest.json')
+    const template = await readFile('./dist/index.html')
 
     for (const page of pages) {
       const deps = getDependencies(manifest, `src/pages/${page.source.path}`)
-      const prerender: (
-        url: string
-      ) => Promise<{
-        html: string
-        links: Set<string>
-      }> = require(toAbsolute('./.wilson/tmp/server/entry-server.js')).prerender
+      const prerender = require(toRoot('./.wilson/tmp/server/entry-server.js'))
+        .prerender as PrerenderFn
       const prerenderResult = await prerender(page.result.url)
-      const styleTags = deps.css
-        .map((path) => `<link rel=stylesheet href=/${path}>`)
-        .join('')
+      const styleTags = deps.css.map(
+        (path) => `<link rel=stylesheet href=/${path}>`
+      )
       // const linkDeps = Array.from(prerenderResult.links)
       //   .map((link) => {
       //     const page = pages.find((page) => page.result.url === link)
@@ -114,20 +111,16 @@ export async function prerenderStaticPages() {
           (path) =>
             `<link rel=modulepreload as=script crossorigin href=/${path}></script>`
         )
-        .join('')
       const scriptTags = deps.js
         .filter(filterExistingTags(template))
         .map((path) => `<script type=module crossorigin src=/${path}></script>`)
-        .join('')
       const source = `${template}`
         .replace(`<!--html-->`, prerenderResult.html)
-        .replace(`<!--style-tags-->`, styleTags)
-        .replace(`<!--preload-tags-->`, preloadTags)
-        .replace(`<!--script-tags-->`, scriptTags)
+        .replace(`<!--style-tags-->`, styleTags.join(''))
+        .replace(`<!--preload-tags-->`, preloadTags.join(''))
+        .replace(`<!--script-tags-->`, scriptTags.join(''))
 
-      const staticHtmlPath = toAbsolute(`./dist/${page.result.path}`)
-      await ensureDir(dirname(staticHtmlPath))
-      await writeFile(staticHtmlPath, source)
+      await writeFile(toRoot(`./dist/${page.result.path}`), source)
     }
   } catch (err) {
     console.log('error', err)

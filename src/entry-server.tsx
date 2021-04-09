@@ -49,6 +49,7 @@ export async function prerender(url: string): Promise<PrerenderResult> {
       type === 'a' &&
       props &&
       props.href &&
+      !props.href.startsWith('http') &&
       (!props.target || props.target === '_self')
     ) {
       links.add(props.href)

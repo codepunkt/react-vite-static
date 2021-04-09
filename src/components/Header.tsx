@@ -1,25 +1,19 @@
-import { ReactNode } from 'react'
-import { Link } from 'react-router-dom'
+import { FunctionalComponent } from 'preact'
 
-interface Props {
-  children?: ReactNode
-}
+const Menu: FunctionalComponent = () => (
+  <>
+    <a href="/">Home</a>
+    <a href="/writing/">Writing</a>
+    <a href="/about/">About</a>
+    <a href="/wat/">404</a>
+  </>
+)
 
-function Menu() {
-  return (
-    <>
-      <Link to="/">Home</Link>
-      <Link to="/writing">Writing</Link>
-      <Link to="/about">About</Link>
-    </>
-  )
-}
+const Header: FunctionalComponent = ({ children }) => (
+  <>
+    <Menu />
+    {children}
+  </>
+)
 
-export default function Header({ children }: Props) {
-  return (
-    <>
-      <Menu />
-      {children}
-    </>
-  )
-}
+export default Header

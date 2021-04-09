@@ -16,13 +16,9 @@ import { Page } from 'src'
 import { transformSync } from '@babel/core'
 import { LoadResult, ResolveIdResult, TransformResult } from 'rollup'
 // @ts-ignore
-import presetReact from '@babel/preset-react'
+import presetPreact from 'babel-preset-preact'
 
 export interface WilsonOptions {
-  /**
-   *
-   */
-  pageSize?: number
   /**
    * Defines attributes on HTML/SVG elements that should be considered when
    * converting relative URLs to imports.
@@ -44,7 +40,6 @@ export interface Frontmatter {
 }
 
 const defaultOptions: Required<WilsonOptions> = {
-  pageSize: 3,
   assetUrlTagConfig: {
     video: ['src', 'poster'],
     source: ['src'],
@@ -61,7 +56,7 @@ const defaultOptions: Required<WilsonOptions> = {
 }
 
 function transformJsx(code: string): string {
-  return transformSync(code, { ast: false, presets: [presetReact] })!.code!
+  return transformSync(code, { ast: false, presets: [presetPreact] })!.code!
 }
 
 function getLayoutUrl(id: string, options: Required<WilsonOptions>): string {
@@ -98,7 +93,7 @@ function htmlToReact(
   const fm = JSON.stringify(frontmatter)
   const template =
     `import Layout from '${layoutUrl}';` +
-    `import React from "react";` +
+    `import { h } from "preact";` +
     `${relativeAssetImports.join('')}` +
     `export default function MarkdownPage(){return <Layout frontmatter={${fm}}>${html}</Layout>}`
 
@@ -108,10 +103,9 @@ function htmlToReact(
 const markdownCache: { [id: string]: Frontmatter } = {}
 
 export const supportedFileExtensions = ['.tsx', '.md']
-let isServer: boolean
 
 /**
- * Transform markdown to HTML to React components
+ * Transform markdown to HTML to Preact components
  */
 const markdownPlugin = (opts: WilsonOptions = {}): Plugin => {
   const options: Required<WilsonOptions> = { ...defaultOptions, ...opts }
@@ -166,14 +160,6 @@ const corePlugin = (opts: WilsonOptions = {}): Plugin => {
     enforce: 'pre',
 
     /**
-     * Find out when server side rendering
-     */
-    config(config, env) {
-      isServer = env.mode === 'server'
-      return config
-    },
-
-    /**
      * Resolve wilson/virtual imports
      */
     resolveId(id: string): ResolveIdResult {
@@ -196,32 +182,21 @@ const corePlugin = (opts: WilsonOptions = {}): Plugin => {
 
         // routes added here will be available client side, but not prerendered (yet!)
         const code =
-          `import { Route } from 'react-router-dom';` +
-          `import React from 'react';` +
+          `import { h } from 'preact';` +
+          `import { lazy } from 'preact-iso';` +
           pages
-            .map((page, i) => {
-              return isServer
-                ? `import Page${i} from '${`${process.cwd()}/src/pages/${
-                    page.source.path
-                  }`}';`
-                : `const Page${i} = React.lazy(() => import('${`${process.cwd()}/src/pages/${
-                    page.source.path
-                  }`}'));`
-            })
+            .map(
+              (page, i) =>
+                `const Page${i} = lazy(() => import('${`${process.cwd()}/src/pages/${
+                  page.source.path
+                }`}'));`
+            )
             .join('\n') +
           `const routes = [` +
           pages
-            .map((page, i) => {
-              return `<Route path="${page.result.url}" key="${
-                page.result.url
-              }" exact>${
-                isServer
-                  ? `<Page${i} />`
-                  : `<React.Suspense fallback={<>Loading...</>}><Page${i} /></React.Suspense>`
-              }</Route>`
-            })
+            .map((page, i) => `<Page${i} path="${page.result.url}" />`)
             .join(',') +
-          '];' +
+          `];` +
           `const markdownPages = ${markdownPages};` +
           `export { markdownPages, routes };`
         return transformJsx(code)

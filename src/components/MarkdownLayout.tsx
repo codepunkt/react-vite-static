@@ -1,16 +1,15 @@
 import classes from './MarkdownLayout.module.scss'
 import { Frontmatter } from 'wilson'
+import { FunctionalComponent } from 'preact'
 
-interface Props {
-  children: React.ReactNode
-  frontmatter: Frontmatter
-}
+const MarkdownLayout: FunctionalComponent<{ frontmatter: Frontmatter }> = ({
+  children,
+  frontmatter,
+}) => (
+  <div className={classes.markdownLayout}>
+    <h1>{frontmatter.title}</h1>
+    {children}
+  </div>
+)
 
-export default function MarkdownLayout({ children, frontmatter }: Props) {
-  return (
-    <>
-      <h1 className={classes.headline}>{frontmatter.title}</h1>
-      {children}
-    </>
-  )
-}
+export default MarkdownLayout

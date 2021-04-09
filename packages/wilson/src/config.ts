@@ -1,7 +1,8 @@
-import reactRefresh from '@vitejs/plugin-react-refresh'
+// import reactRefresh from '@vitejs/plugin-react-refresh'
 import { minifyHtml } from 'vite-plugin-html'
 import { plugins } from './plugin'
 import { UserConfig as ViteUserConfig } from 'vite'
+import prefresh from '@prefresh/vite'
 
 export function getConfig(
   ssr: boolean = false,
@@ -9,7 +10,7 @@ export function getConfig(
 ): ViteUserConfig {
   return {
     optimizeDeps: {
-      include: ['react', 'react-dom', 'react-router-dom'],
+      include: ['preact', 'preact-iso'],
     },
     clearScreen: false,
     mode: dev ? 'development' : ssr ? 'server' : 'production',
@@ -20,7 +21,8 @@ export function getConfig(
         useShortDoctype: true,
       }),
       ...plugins(),
-      reactRefresh(),
+      // reactRefresh(),
+      prefresh({}),
     ],
     build: {
       ssr,
@@ -38,7 +40,9 @@ export function getConfig(
       minify: ssr ? false : !process.env.DEBUG,
     },
     esbuild: {
-      jsxInject: `import React from 'react'`,
+      jsxInject: `import { h, Fragment } from 'preact'`,
+      jsxFactory: 'h',
+      jsxFragment: 'Fragment',
     },
   }
 }

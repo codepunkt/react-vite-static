@@ -43,7 +43,7 @@ type MarkdownLayouts = Array<{
 }>
 
 export const getOptions = async (): Promise<OptionsWithDefaults> => {
-  const userConfig = (await readFile('./.wilson/wilson.config.ts')) as Options
+  const userConfig = (await readFile('./wilson.config.ts')) as Options
 
   return {
     ...userConfig,

@@ -6,7 +6,7 @@ import { prerenderStaticPages } from '../prerender'
 import { createOpengraphImages } from '../opengraph'
 
 export async function build() {
-  await emptyDir(`${process.cwd()}/.wilson/tmp`)
+  await emptyDir(`${process.cwd()}/.wilson`)
   await emptyDir(`${process.cwd()}/dist`)
 
   await collectPageData()

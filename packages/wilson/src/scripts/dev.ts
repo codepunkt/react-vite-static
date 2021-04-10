@@ -4,7 +4,7 @@ import { getViteConfig } from '../config'
 import { emptyDir } from 'fs-extra'
 
 export async function startDevServer(root: string = process.cwd()) {
-  await emptyDir(`${process.cwd()}/.wilson/tmp`)
+  await emptyDir(`${process.cwd()}/.wilson`)
   await collectPageData()
   const config = await getViteConfig({ ssr: false })
   const devServer = await createViteServer(config)

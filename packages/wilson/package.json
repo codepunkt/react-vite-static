@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "@babel/core": "^7.13.13",
+    "@codepunkt/wasm-layout-text": "^3.0.0",
     "@prefresh/vite": "^2.2.0",
     "babel-preset-preact": "^2.0.0",
     "boxen": "^5.0.0",
@@ -39,6 +40,7 @@
     "hast": "^1.0.0",
     "hast-util-raw": "^6.1.0",
     "hast-util-to-html": "^7.1.2",
+    "jimp": "^0.16.1",
     "mdast-util-to-hast": "^10.2.0",
     "minimatch": "^3.0.4",
     "minimist": "^1.2.5",

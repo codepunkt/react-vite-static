@@ -2,7 +2,8 @@ import { minifyHtml } from 'vite-plugin-html'
 import { Frontmatter, getWilsonPlugins } from './plugin'
 import { UserConfig as ViteUserConfig } from 'vite'
 import prefresh from '@prefresh/vite'
-import { readFile, toRoot } from './util'
+import { resolve } from 'path'
+import { toRoot } from './util'
 
 export interface Options {
   /**
@@ -19,7 +20,7 @@ export interface Options {
 }
 
 export type OptionsWithDefaults = Options &
-  Required<Pick<Options, 'markdownLayouts'>>
+  Required<Pick<Options, 'markdownLayouts' | 'opengraphImage'>>
 
 /**
  * Represents a single text rendered onto an opengraph image.
@@ -42,18 +43,32 @@ type MarkdownLayouts = Array<{
   pattern?: string
 }>
 
+let options: OptionsWithDefaults | null = null
 export const getOptions = async (): Promise<OptionsWithDefaults> => {
-  const userConfig = (await readFile('./wilson.config.ts')) as Options
+  if (!options) {
+    // const userConfig = (await import(toRoot('./wilson.config.js'))) as Options
 
-  return {
-    ...userConfig,
-    markdownLayouts: userConfig.markdownLayouts ?? [
-      {
-        pattern: '**',
-        component: toRoot('/src/components/MarkdownLayout'),
-      },
-    ],
+    const configRoot = process.cwd()
+    // @ts-ignore
+    const configUrl = resolve(configRoot, 'wilson.config.js')
+    // using eval to avoid this from being compiled away by TS/Rollup
+    // append a query so that we force reload fresh config in case of
+    // server restart
+    const userConfig = (await eval(`import(configUrl + '?t=${Date.now()}')`))
+      .default
+
+    options = {
+      ...userConfig,
+      markdownLayouts: userConfig.markdownLayouts ?? [
+        {
+          pattern: '**',
+          component: toRoot('/src/components/MarkdownLayout'),
+        },
+      ],
+    }
   }
+
+  return options as OptionsWithDefaults
 }
 
 interface ViteConfigOptions {

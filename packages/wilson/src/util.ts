@@ -47,3 +47,15 @@ export const writeFile = async (path: string, content: string) => {
   await ensureDir(dirname(path))
   return await write(path, content)
 }
+
+/**
+ * Converts a 6-digit hex string to an RGB array.
+ */
+export const hexToRgb = (hex: string): [r: number, g: number, b: number] => {
+  const hexCode = hex.replace(/^#/, '')
+  const bigint = parseInt(hexCode, 16)
+  const r = (bigint >> 16) & 255
+  const g = (bigint >> 8) & 255
+  const b = bigint & 255
+  return [r, g, b]
+}

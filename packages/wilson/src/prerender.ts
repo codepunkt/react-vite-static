@@ -16,7 +16,7 @@ export async function prerenderStaticPages() {
     const pages = await getPageData()
     const manifest = await readJson<Manifest>('./dist/manifest.json')
     const template = await readFile('./dist/index.html')
-    const prerender = require(toRoot('./.wilson/tmp/server/entry-server.js'))
+    const prerender = require(toRoot('./.wilson/ssr/entry-server.js'))
       .prerender as PrerenderFn
 
     for (const page of pages) {

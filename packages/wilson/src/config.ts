@@ -82,7 +82,7 @@ export const getViteConfig = async ({
     ],
     build: {
       ssr,
-      outDir: ssr ? '.wilson/tmp/server' : 'dist',
+      outDir: ssr ? '.wilson/ssr' : 'dist',
       // inline async chunk css
       cssCodeSplit: true,
       // TODO: asset inlining doesn't work? check how vite/vitepress do it for vue

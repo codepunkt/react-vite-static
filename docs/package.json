@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "license": "MIT",
   "private": true,
+  "author": "Christoph Werner <christoph@codepunkt.de>",
   "scripts": {
     "start": "cd ../packages/wilson && yarn build && cd ../../docs && yarn dev",
     "prod": "cd ../packages/wilson && yarn build && cd ../..docs && yarn build && yarn serve",

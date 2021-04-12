@@ -41,6 +41,7 @@
     "hast": "^1.0.0",
     "hast-util-raw": "^6.1.0",
     "hast-util-to-html": "^7.1.2",
+    "hoofd": "^1.2.2",
     "jimp": "^0.16.1",
     "mdast-util-to-hast": "^10.2.0",
     "minimatch": "^3.0.4",

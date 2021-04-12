@@ -1,4 +1,4 @@
-import { collectPageData } from '../collectPageData'
+import { collectPageData } from '../page'
 import { createServer as createViteServer } from 'vite'
 import { getViteConfig } from '../config'
 import { emptyDir } from 'fs-extra'

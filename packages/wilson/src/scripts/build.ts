@@ -1,7 +1,7 @@
 import { build as viteBuild } from 'vite'
 import { getViteConfig } from '../config'
 import { emptyDir } from 'fs-extra'
-import { collectPageData } from '../collectPageData'
+import { collectPageData } from '../page'
 import { prerenderStaticPages } from '../prerender'
 import { createOpengraphImages } from '../opengraph'
 

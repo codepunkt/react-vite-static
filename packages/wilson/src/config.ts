@@ -2,10 +2,16 @@ import { minifyHtml } from 'vite-plugin-html'
 import { Frontmatter } from './plugins/markdown'
 import { UserConfig as ViteUserConfig } from 'vite'
 import prefresh from '@prefresh/vite'
-import { resolve } from 'path'
 import { toRoot } from './util'
 import markdownPlugin from './plugins/markdown'
 import virtualPlugin from './plugins/virtual'
+
+interface SiteMetadata {
+  title: string
+  description: string
+  author: string
+  lang: string
+}
 
 export interface Options {
   /**
@@ -19,6 +25,7 @@ export interface Options {
    * Mapping of layout components to glob pattern, targeting markdown documents
    */
   markdownLayouts?: MarkdownLayouts
+  siteMetadata: SiteMetadata
 }
 
 export type OptionsWithDefaults = Options &
@@ -45,32 +52,29 @@ type MarkdownLayouts = Array<{
   pattern?: string
 }>
 
-let options: OptionsWithDefaults | null = null
-export const getOptions = async (): Promise<OptionsWithDefaults> => {
-  if (!options) {
-    // const userConfig = (await import(toRoot('./wilson.config.js'))) as Options
+let options: OptionsWithDefaults
 
-    const configRoot = process.cwd()
-    // @ts-ignore
-    const configUrl = resolve(configRoot, 'wilson.config.js')
-    // using eval to avoid this from being compiled away by TS/Rollup
-    // append a query so that we force reload fresh config in case of
-    // server restart
-    const userConfig = (await eval(`import(configUrl + '?t=${Date.now()}')`))
-      .default
+export const loadOptions = async (): Promise<OptionsWithDefaults> => {
+  const userConfig = require(toRoot('wilson.config.js'))
 
-    options = {
-      ...userConfig,
-      markdownLayouts: userConfig.markdownLayouts ?? [
-        {
-          pattern: '**',
-          component: toRoot('/src/components/MarkdownLayout'),
-        },
-      ],
-    }
+  options = {
+    ...userConfig,
+    markdownLayouts: userConfig.markdownLayouts ?? [
+      {
+        pattern: '**',
+        component: toRoot('/src/components/MarkdownLayout'),
+      },
+    ],
   }
 
   return options as OptionsWithDefaults
+}
+
+export const getOptions = () => {
+  if (!options) {
+    throw new Error('run loadOptions before you use getOptions!')
+  }
+  return options
 }
 
 interface ViteConfigOptions {

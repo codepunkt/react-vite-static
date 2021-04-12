@@ -3,12 +3,11 @@ import { LoadResult, ResolveIdResult } from 'rollup'
 // @ts-ignore
 import presetPreact from 'babel-preset-preact'
 import { getPageData, toRoot, transformJsx } from '../util'
-import { Options } from '../config'
 
 /**
  * Provides virtual import of routes and markdown page metadata.
  */
-const virtualPlugin = async (opts: Options = {}): Promise<Plugin> => {
+const virtualPlugin = async (): Promise<Plugin> => {
   const virtualImportPath = 'wilson/virtual'
 
   return {

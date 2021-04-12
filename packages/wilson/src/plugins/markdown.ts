@@ -83,7 +83,7 @@ function htmlToPreact(
  * Transform markdown to HTML to Preact components
  */
 const markdownPlugin = async (): Promise<Plugin> => {
-  const options = await getOptions()
+  const options = getOptions()
 
   return {
     name: 'vite-plugin-wilson-markdown',

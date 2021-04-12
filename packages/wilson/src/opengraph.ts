@@ -8,7 +8,7 @@ import { dirname } from 'path'
 export async function createOpengraphImages() {
   const {
     opengraphImage: { background, texts },
-  } = await getOptions()
+  } = getOptions()
 
   const width = 1200
   const height = 630

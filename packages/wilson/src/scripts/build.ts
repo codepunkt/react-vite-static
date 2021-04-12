@@ -1,5 +1,5 @@
 import { build as viteBuild } from 'vite'
-import { getViteConfig } from '../config'
+import { getViteConfig, loadOptions } from '../config'
 import { emptyDir } from 'fs-extra'
 import { collectPageData } from '../page'
 import { prerenderStaticPages } from '../prerender'
@@ -9,6 +9,7 @@ export async function build() {
   await emptyDir(`${process.cwd()}/.wilson`)
   await emptyDir(`${process.cwd()}/dist`)
 
+  await loadOptions()
   await collectPageData()
 
   await viteBuild(await getViteConfig({ ssr: true }))

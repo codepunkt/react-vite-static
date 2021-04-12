@@ -1,6 +1,6 @@
 import { dirname, join } from 'path'
 import { readFile as read, writeFile as write, ensureDir } from 'fs-extra'
-import { Page } from './collectPageData'
+import { Page } from './page'
 import { transformSync } from '@babel/core'
 // @ts-ignore
 import presetPreact from 'babel-preset-preact'

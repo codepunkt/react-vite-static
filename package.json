@@ -13,8 +13,8 @@
     "docs:dev": "yarn workspace @wilson/docs dev",
     "docs:serve": "yarn workspace @wilson/docs serve",
     "wilson:build": "yarn workspace wilson build",
-    "start": "run-s wilson:build docs:dev",
-    "prod": "run-s wilson:build docs:build docs:serve"
+    "dev": "run-s wilson:build docs:dev",
+    "build": "run-s wilson:build docs:build docs:serve"
   },
   "engines": {
     "node": "^14.16.0",

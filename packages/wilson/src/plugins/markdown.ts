@@ -35,18 +35,18 @@ const assetUrlTagConfig = {
 }
 
 function getLayoutUrl(id: string, options: OptionsWithDefaults): string {
-  const markdownLayout = options.markdownLayouts.find(({ pattern = '**' }) => {
+  const pageLayout = options.pageLayouts.find(({ pattern = '**' }) => {
     return minimatch(
       id.replace(new RegExp(`^${process.cwd()}\/src\/pages\/`), ''),
       pattern
     )
   })
 
-  if (!markdownLayout) {
+  if (!pageLayout) {
     throw new Error(`Couldn't find markdown layout for: ${id}!`)
   }
 
-  return relative(dirname(id), markdownLayout.component)
+  return relative(dirname(id), pageLayout.component)
 }
 
 function htmlToPreact(

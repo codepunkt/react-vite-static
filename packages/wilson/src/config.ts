@@ -37,12 +37,12 @@ export interface Options {
   /**
    * Mapping of layout components to glob pattern, targeting markdown documents
    */
-  markdownLayouts?: MarkdownLayouts
+  pageLayouts?: PageLayouts
   siteMetadata: SiteMetadata
 }
 
 export type OptionsWithDefaults = Options &
-  Required<Pick<Options, 'markdownLayouts' | 'opengraphImage'>>
+  Required<Pick<Options, 'pageLayouts' | 'opengraphImage'>>
 
 /**
  * Represents a single text rendered onto an opengraph image.
@@ -60,7 +60,7 @@ interface OpengraphImageText {
   verticalAlign?: 'top' | 'center' | 'bottom'
 }
 
-type MarkdownLayouts = Array<{
+type PageLayouts = Array<{
   component: string
   pattern?: string
 }>
@@ -72,7 +72,7 @@ export const loadOptions = async (): Promise<OptionsWithDefaults> => {
 
   options = {
     ...userConfig,
-    markdownLayouts: userConfig.markdownLayouts ?? [
+    pageLayouts: userConfig.pageLayouts ?? [
       {
         pattern: '**',
         component: toRoot('/src/components/MarkdownLayout'),

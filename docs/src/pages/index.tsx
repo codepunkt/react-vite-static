@@ -1,7 +1,9 @@
-import { useTitle } from 'hoofd/preact'
+import { Frontmatter } from 'wilson'
 import { FunctionalComponent } from 'preact'
 
-export const Page: FunctionalComponent = () => {
-  useTitle('Home')
-  return <h1>Home</h1>
+export const Page: FunctionalComponent = () => <h1>{frontmatter.title}</h1>
+
+export const frontmatter: Frontmatter = {
+  title: 'Home',
+  draft: false,
 }

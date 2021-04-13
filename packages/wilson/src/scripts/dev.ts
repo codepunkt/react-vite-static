@@ -4,6 +4,9 @@ import { getViteConfig, loadOptions } from '../config'
 import { emptyDir } from 'fs-extra'
 
 export async function startDevServer(root: string = process.cwd()) {
+  // possible validations
+  // - tsx pages don't have a default export
+  // - tsx pages export Page
   await emptyDir(`${process.cwd()}/.wilson`)
 
   await loadOptions()

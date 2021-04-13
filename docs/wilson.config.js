@@ -4,6 +4,7 @@
 module.exports = {
   siteMetadata: {
     siteName: 'Wilson',
+    siteUrl: 'https://wilsonjs.com',
     titleTemplate: '%s | Wilson',
     description: 'Blazing fast, opinionated static site generator for Preact',
     author: 'Christoph Werner',

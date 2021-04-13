@@ -9,10 +9,10 @@ const NotFound: FunctionalComponent = () => <>Not Found</>
 const App: FunctionalComponent<{ url?: string }> = ({ url }) => {
   return (
     <>
-      <Header />
-      <Meta />
       <LocationProvider>
         <div>
+          <Header />
+          <Meta />
           <ErrorBoundary>
             <Router>{[...routes, <NotFound default />]}</Router>
           </ErrorBoundary>

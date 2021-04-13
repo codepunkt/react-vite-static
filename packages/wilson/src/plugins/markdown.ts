@@ -71,7 +71,7 @@ function htmlToPreact(
     `import { h } from "preact";` +
     `import { useTitle } from "hoofd/preact";` +
     `${relativeAssetImports.join('')}` +
-    `export default function MarkdownPage() {` +
+    `export const Page = () => {` +
     `  useTitle('${frontmatter.title}');` +
     `  return <Layout frontmatter={${fm}}>${html}</Layout>` +
     `}`

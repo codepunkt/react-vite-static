@@ -36,7 +36,7 @@ const virtualPlugin = async (): Promise<Plugin> => {
 
         const code =
           `import { h } from 'preact';` +
-          `import { lazy } from 'preact-iso';` +
+          `import { lazy, useLocation } from 'preact-iso';` +
           `import { useMeta, useTitleTemplate } from 'hoofd/preact';` +
           pages
             .map(
@@ -53,9 +53,10 @@ const virtualPlugin = async (): Promise<Plugin> => {
           `];` +
           `const siteMetadata = ${JSON.stringify(getOptions().siteMetadata)};` +
           `const markdownPages = ${markdownPages};` +
+          // `const location = useLocation();` +
           `const Meta = () => {` +
           `  const meta = ${JSON.stringify(getOptions().siteMetadata)};` +
-          `  console.log({meta});` +
+          // `  console.log({meta});` +
           `  useTitleTemplate(meta.titleTemplate);` +
           `  useMeta({ name: 'author', content: meta.author });` +
           `  useMeta({ name: 'description', content: meta.description });` +

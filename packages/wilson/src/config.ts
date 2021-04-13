@@ -4,9 +4,11 @@ import prefresh from '@prefresh/vite'
 import { toRoot } from './util'
 import markdownPlugin from './plugins/markdown'
 import virtualPlugin from './plugins/virtual'
+import pagesPlugin from './plugins/pages'
 
 export interface SiteMetadata {
   siteName: string
+  siteUrl: string
   titleTemplate: string
   description: string
   author: string
@@ -93,7 +95,12 @@ export const getViteConfig = async ({
       include: ['preact', 'preact-iso'],
     },
     clearScreen: false,
-    plugins: [await virtualPlugin(), await markdownPlugin(), prefresh({})],
+    plugins: [
+      await virtualPlugin(),
+      await markdownPlugin(),
+      await pagesPlugin(),
+      prefresh({}),
+    ],
     build: {
       ssr,
       outDir: ssr ? '.wilson/ssr' : 'dist',

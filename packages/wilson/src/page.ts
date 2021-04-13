@@ -4,6 +4,7 @@ import { extname, basename } from 'path'
 import { Frontmatter } from './plugins/markdown'
 import grayMatter from 'gray-matter'
 import { pageDataPath, toRoot } from './util'
+import { pageExtensions } from './plugins/pages'
 
 export type Page = (
   | { type: 'markdown'; frontmatter: Frontmatter }
@@ -20,11 +21,6 @@ export type Page = (
 }
 
 const pages: Page[] = []
-
-/**
- * Allowed extensions for pages.
- */
-const pageExtensions = ['.tsx', '.md']
 
 export async function collectPageData() {
   const pagePath = `${process.cwd()}/src/pages`

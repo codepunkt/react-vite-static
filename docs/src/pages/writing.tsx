@@ -2,7 +2,7 @@ import { FunctionalComponent } from 'preact'
 import { markdownPages } from 'wilson/virtual'
 import { useTitle } from 'hoofd/preact'
 
-const WritingPage: FunctionalComponent = () => {
+export const Page: FunctionalComponent = () => {
   useTitle('Writing')
   return (
     <>
@@ -17,5 +17,3 @@ const WritingPage: FunctionalComponent = () => {
     </>
   )
 }
-
-export default WritingPage

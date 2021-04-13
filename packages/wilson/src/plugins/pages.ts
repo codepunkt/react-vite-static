@@ -33,7 +33,10 @@ const pagesPlugin = async (): Promise<Plugin> => {
         `import { siteMetadata } from "wilson/virtual";` +
         `${code}` +
         `export default function PageWrapper() {` +
-        `  useMeta({ property: 'og:url', content: siteMetadata.siteUrl + "${page.result.url}" });` +
+        `  const pageUrl = siteMetadata.siteUrl + '${page.result.url}';` +
+        `  useMeta({ property: 'og:url', content: pageUrl });` +
+        `  useMeta({ property: 'og:image', content: pageUrl + 'og-image.jpg' });` +
+        `  useMeta({ property: 'og:image:secure_url', content: pageUrl + 'og-image.jpg' });` +
         `  return <Page />;` +
         `}`
 

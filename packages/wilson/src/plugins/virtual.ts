@@ -61,7 +61,6 @@ const virtualPlugin = async (): Promise<Plugin> => {
           `  useMeta({ name: 'author', content: meta.author });` +
           `  useMeta({ name: 'description', content: meta.description });` +
           `  useMeta({ property: 'og:description', content: meta.description });` +
-          `  useMeta({ property: 'og:image', content: 'og-image.jpg' });` +
           `  useMeta({ property: 'og:site_name', content: meta.siteName });` +
           `  return null;` +
           `};` +

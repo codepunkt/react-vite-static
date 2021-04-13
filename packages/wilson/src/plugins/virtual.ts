@@ -1,10 +1,7 @@
 import { Plugin } from 'vite'
 import { LoadResult, ResolveIdResult } from 'rollup'
-// @ts-ignore
-import presetPreact from 'babel-preset-preact'
 import { getPageData, toRoot, transformJsx } from '../util'
 import { getOptions } from '../config'
-import packageJson from '../../package.json'
 
 /**
  * Provides virtual import of routes and markdown page metadata.
@@ -73,7 +70,9 @@ const virtualPlugin = async (): Promise<Plugin> => {
           `  useMeta({ property: 'og:type', content: 'website' });` +
           `  useMeta({ property: 'twitter:card', content: 'summary_large_image' });` +
           `  useMeta({ property: 'og:site_name', content: siteMetadata.siteName });` +
-          `  useMeta({ name: 'generator', content: 'Wilson ${packageJson.version}' });` +
+          `  useMeta({ name: 'generator', content: 'Wilson ${
+            require('wilson/package.json').version
+          }' });` +
           `  return addTwitter ? <TwitterMeta /> : null;` +
           `};` +
           `export { markdownPages, routes, siteMetadata, Meta };`

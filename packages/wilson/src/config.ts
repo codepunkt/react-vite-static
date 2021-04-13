@@ -6,6 +6,9 @@ import markdownPlugin from './plugins/markdown'
 import virtualPlugin from './plugins/virtual'
 import pagesPlugin from './plugins/pages'
 
+/**
+ * Site metadata.
+ */
 export interface SiteMetadata {
   siteName: string
   siteUrl: string
@@ -13,6 +16,14 @@ export interface SiteMetadata {
   description: string
   author: string
   lang: string
+  /**
+   * Defines `twitter:site` meta. Defines `twitter:creator` meta if `twitterCreator` is not defined.
+   */
+  twitterSite?: string
+  /**
+   * Defines `twitter:creator` meta. Defines `twitter:site` meta if `twitterSite` is not defined.
+   */
+  twitterCreator?: string
 }
 
 export interface Options {

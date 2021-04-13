@@ -36,7 +36,7 @@ const virtualPlugin = async (): Promise<Plugin> => {
 
         const code =
           `import { h } from 'preact';` +
-          `import { lazy, useLocation } from 'preact-iso';` +
+          `import { lazy } from 'preact-iso';` +
           `import { useMeta, useTitleTemplate } from 'hoofd/preact';` +
           pages
             .map(
@@ -51,23 +51,28 @@ const virtualPlugin = async (): Promise<Plugin> => {
             .map((page, i) => `<Page${i} path="${page.result.url}" />`)
             .join(',') +
           `];` +
-          `const siteMetadata = ${JSON.stringify(getOptions().siteMetadata)};` +
           `const markdownPages = ${markdownPages};` +
-          // `const location = useLocation();` +
+          `const siteMetadata = ${JSON.stringify(getOptions().siteMetadata)};` +
+          `const twitterSite = siteMetadata.twitterSite ?? siteMetadata.twitterCreator;` +
+          `const twitterCreator = siteMetadata.twitterCreator ?? siteMetadata.twitterSite;` +
+          `const TwitterMeta = () => {` +
+          `  useMeta({ property: 'twitter:site', content: twitterSite });` +
+          `  useMeta({ property: 'twitter:creator', content: twitterCreator });` +
+          `  return null;` +
+          `};` +
           `const Meta = () => {` +
-          `  const meta = ${JSON.stringify(getOptions().siteMetadata)};` +
-          // `  console.log({meta});` +
-          `  useTitleTemplate(meta.titleTemplate);` +
-          `  useMeta({ name: 'author', content: meta.author });` +
-          `  useMeta({ name: 'description', content: meta.description });` +
-          `  useMeta({ property: 'og:description', content: meta.description });` +
-          `  useMeta({ property: 'og:site_name', content: meta.siteName });` +
+          `  const addTwitter = !!twitterSite || !!twitterCreator;` +
+          `  useTitleTemplate(siteMetadata.titleTemplate);` +
+          `  useMeta({ name: 'author', content: siteMetadata.author });` +
+          `  useMeta({ name: 'description', content: siteMetadata.description });` +
+          `  useMeta({ property: 'og:description', content: siteMetadata.description });` +
+          `  useMeta({ property: 'og:site_name', content: siteMetadata.siteName });` +
           `  useMeta({ property: 'og:image:width', content: '1200' });` +
           `  useMeta({ property: 'og:image:height', content: '630' });` +
           `  useMeta({ property: 'og:type', content: 'website' });` +
           `  useMeta({ property: 'twitter:card', content: 'summary_large_image' });` +
-          `  useMeta({ property: 'og:site_name', content: meta.siteName });` +
-          `  return null;` +
+          `  useMeta({ property: 'og:site_name', content: siteMetadata.siteName });` +
+          `  return addTwitter ? <TwitterMeta /> : null;` +
           `};` +
           `export { markdownPages, routes, siteMetadata, Meta };`
         return transformJsx(code)

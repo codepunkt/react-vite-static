@@ -51,7 +51,6 @@ export async function collectPageData() {
         ? `${url.replace(/^\//, '')}.html`
         : `${url.replace(/^\//, '')}index.html`
 
-    const defaultFrontmatter = { draft: false }
     const content = await readFile(fullPath, 'utf-8')
     let frontmatter: Frontmatter
 
@@ -103,7 +102,7 @@ export async function collectPageData() {
       throw new Error(`frontmatter has no title: ${path}!`)
 
     frontmatter = {
-      ...defaultFrontmatter,
+      draft: false,
       ...frontmatter,
     }
 

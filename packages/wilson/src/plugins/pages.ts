@@ -31,12 +31,14 @@ const pagesPlugin = async (): Promise<Plugin> => {
         throw new Error(`pageData for page ${id} not found!`)
       }
 
-      const pageLayout = pageLayouts.find(({ pattern = '**' }) =>
-        minimatch(
-          id.replace(new RegExp(`^${process.cwd()}\/src\/pages\/`), ''),
-          pattern
-        )
-      )
+      const pageLayout =
+        page.frontmatter.layout ??
+        pageLayouts.find(({ pattern = '**' }) =>
+          minimatch(
+            id.replace(new RegExp(`^${process.cwd()}\/src\/pages\/`), ''),
+            pattern
+          )
+        )?.component
 
       const wrapper =
         `import { useMeta, useTitle } from "hoofd/preact";` +
@@ -45,7 +47,7 @@ const pagesPlugin = async (): Promise<Plugin> => {
           pageLayout
             ? `import Layout from '${relative(
                 dirname(id),
-                toRoot(`./src/layouts/${pageLayout.component}`)
+                toRoot(`./src/layouts/${pageLayout}`)
               )}'`
             : `import { Fragment as Layout } from 'preact'`
         };` +

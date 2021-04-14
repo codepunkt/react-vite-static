@@ -13,9 +13,13 @@ import { TransformResult } from 'rollup'
 import { getOptions } from '../config'
 import { transformJsx } from '../util'
 
+/**
+ * Page frontmatter.
+ */
 export interface Frontmatter {
-  draft: boolean
   title: string
+  draft?: boolean
+  layout?: string
   ogType?: string
   [key: string]: any
 }

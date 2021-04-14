@@ -6,6 +6,7 @@ import markdownPlugin from './plugins/markdown'
 import virtualPlugin from './plugins/virtual'
 import pagesPlugin from './plugins/pages'
 import indexHtmlPlugin from './plugins/indexHtml'
+import { Page } from './page'
 
 /**
  * Site metadata.
@@ -46,6 +47,10 @@ export interface Options {
    * Mapping of layout components to glob pattern, targeting markdown documents
    */
   pageLayouts?: PageLayouts
+  /**
+   *
+   */
+  linkPreloadTest: (targetPage: Page) => boolean
   siteMetadata: SiteMetadata
 }
 

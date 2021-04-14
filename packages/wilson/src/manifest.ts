@@ -14,10 +14,10 @@ interface ManifestChunk {
   dynamicImports?: string[]
 }
 
-interface Dependencies {
+export interface Dependencies {
   js: string[]
   css: string[]
-  assets: string[]
+  assets?: string[]
 }
 
 export const wrapManifest = (manifest: Manifest) => {
@@ -35,7 +35,10 @@ export const wrapManifest = (manifest: Manifest) => {
     return paths.map((path) => manifest[path].assets ?? []).flat()
   }
 
-  const getPageDependencies = (pagePath: string): Dependencies => {
+  const getPageDependencies = (
+    pagePath: string,
+    options: { assets: boolean } = { assets: true }
+  ): Dependencies => {
     // add dependencies to sets to get rid of duplicates
     const js = new Set<string>(getJsDependencies([pagePath]))
     const css = new Set<string>(getCssDependencies([pagePath]))
@@ -58,7 +61,7 @@ export const wrapManifest = (manifest: Manifest) => {
         (dep) => !dep.startsWith('_') && extname(dep) === '.js'
       ),
       css: Array.from(css),
-      assets: Array.from(assets),
+      ...(options.assets ? { assets: Array.from(assets) } : {}),
     }
   }
 

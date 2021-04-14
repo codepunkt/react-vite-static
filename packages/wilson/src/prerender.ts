@@ -1,8 +1,9 @@
-import { Manifest, wrapManifest } from './manifest'
+import { Dependencies, Manifest, wrapManifest } from './manifest'
 import { readFile, toRoot, readJson, writeFile, getPageData } from './util'
 import { minify } from 'html-minifier-terser'
 import chalk from 'chalk'
 import size from 'brotli-size'
+import { getOptions } from './config'
 
 type PrerenderFn = (
   url: string
@@ -43,6 +44,7 @@ export async function prerenderStaticPages() {
       )} prerendering static pages...`
     )
     const pages = await getPageData()
+    const options = getOptions()
     const manifest = await readJson<Manifest>('./dist/manifest.json')
     const template = await readFile('./dist/index.html')
     const prerender = require(toRoot('./.wilson/ssr/entry-server.js'))
@@ -50,6 +52,7 @@ export async function prerenderStaticPages() {
 
     let longestPath = 0
     const sources: Record<string, string> = {}
+    const linkDependencies: Record<string, Dependencies> = {}
 
     for (const page of pages) {
       if (page.result.path.length > longestPath)
@@ -61,16 +64,17 @@ export async function prerenderStaticPages() {
         `src/pages/${page.source.path}`
       )
 
-      // const linkDeps = Array.from(prerenderResult.links)
-      //   .map((link) => {
-      //     const page = pages.find((page) => page.result.url === link)
-      //     if (!page) return false
-      //     const deps = wrappedManifest.getPageDependencies(
-      //       `src/pages/${page.source.path}`
-      //     )
-      //     return { link, deps }
-      //   })
-      //   .filter(Boolean)
+      prerenderResult.links.forEach((link) => {
+        const targetPage = pages.find((page) => page.result.url === link)
+        if (targetPage && !linkDependencies[link]) {
+          linkDependencies[
+            link
+          ] = wrappedManifest.getPageDependencies(
+            `src/pages/${targetPage.source.path}`,
+            { assets: false }
+          )
+        }
+      })
 
       const styleTags = pageDependencies.css.map(
         (dependency) => `<link rel=stylesheet href=/${dependency}>`
@@ -98,11 +102,33 @@ export async function prerenderStaticPages() {
       `
 
       const source = `${template}`
-        .replace(`<!--head-->`, head)
-        .replace(`<!--html-->`, prerenderResult.html)
-        .replace(`<!--style-tags-->`, styleTags.join(''))
-        .replace(`<!--preload-tags-->`, preloadTags.join(''))
-        .replace(`<!--script-tags-->`, scriptTags.join(''))
+        .replace('<!--head-->', head)
+        .replace('<!--html-->', prerenderResult.html)
+        .replace('<!--style-tags-->', styleTags.join(''))
+        .replace('<!--preload-tags-->', preloadTags.join(''))
+        .replace('<!--script-tags-->', scriptTags.join(''))
+
+      sources[page.result.path] = source
+    }
+
+    for (const page of pages) {
+      const filteredLinkDependencies: Record<string, Dependencies> = {}
+      for (const path in linkDependencies) {
+        const targetPage = pages.find((page) => page.result.url === path)
+        if (
+          targetPage &&
+          options.linkPreloadTest &&
+          options.linkPreloadTest(targetPage)
+        ) {
+          filteredLinkDependencies[path] = linkDependencies[path]
+        }
+      }
+      const source = sources[page.result.path].replace(
+        '<!--wilson-data-->',
+        `<script>window.__WILSON_DATA__ = {` +
+          `  pathPreloads:${JSON.stringify(filteredLinkDependencies)}` +
+          `};</script>`
+      )
 
       const minifiedSource = minify(source, {
         collapseBooleanAttributes: true,
@@ -116,7 +142,6 @@ export async function prerenderStaticPages() {
         useShortDoctype: true,
       })
 
-      sources[page.result.path] = minifiedSource
       await writeFile(toRoot(`./dist/${page.result.path}`), minifiedSource)
     }
 

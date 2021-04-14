@@ -976,6 +976,13 @@ braces@^3.0.1, braces@~3.0.2:
   dependencies:
     fill-range "^7.0.1"
 
+brotli-size@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/brotli-size/-/brotli-size-4.0.0.tgz#a05ee3faad3c0e700a2f2da826ba6b4d76e69e5e"
+  integrity sha512-uA9fOtlTRC0iqKfzff1W34DXUA3GyVqbUaeo3Rw3d4gd1eavKVCETXrn3NzO74W+UVkG3UHu8WxUi+XvKI/huA==
+  dependencies:
+    duplexer "0.1.1"
+
 browserslist@^4.14.5:
   version "4.16.3"
   resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-4.16.3.tgz#340aa46940d7db878748567c5dea24a48ddf3717"
@@ -1356,6 +1363,11 @@ dot-case@^3.0.4:
   dependencies:
     no-case "^3.0.4"
     tslib "^2.0.3"
+
+duplexer@0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/duplexer/-/duplexer-0.1.1.tgz#ace6ff808c1ce66b57d1ebf97977acb02334cfc1"
+  integrity sha1-rOb/gIwc5mtX0ev5eXessCM0z8E=
 
 ee-first@1.1.1:
   version "1.1.1"

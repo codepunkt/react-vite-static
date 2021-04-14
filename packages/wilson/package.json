@@ -37,6 +37,7 @@
     "astring": "^1.7.4",
     "babel-preset-preact": "^2.0.0",
     "boxen": "^5.0.0",
+    "brotli-size": "^4.0.0",
     "chalk": "^4.1.0",
     "compression": "^1.7.4",
     "estree-walker": "2.0.2",

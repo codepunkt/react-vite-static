@@ -35,7 +35,7 @@ const virtualPlugin = async (): Promise<Plugin> => {
         const code =
           `import { h, Fragment } from 'preact';` +
           `import { lazy } from 'preact-iso';` +
-          `import { useMeta, useTitleTemplate } from 'hoofd/preact';` +
+          `import { useTitleTemplate } from 'hoofd/preact';` +
           pages
             .map(
               (page, i) =>
@@ -51,34 +51,9 @@ const virtualPlugin = async (): Promise<Plugin> => {
           `];` +
           `const markdownPages = ${markdownPages};` +
           `const siteMetadata = ${JSON.stringify(getOptions().siteMetadata)};` +
-          `const twitterSite = siteMetadata.twitterSite ?? siteMetadata.twitterCreator;` +
-          `const twitterCreator = siteMetadata.twitterCreator ?? siteMetadata.twitterSite;` +
-          `const TwitterMeta = () => {` +
-          `  useMeta({ property: 'twitter:site', content: twitterSite });` +
-          `  useMeta({ property: 'twitter:creator', content: twitterCreator });` +
-          `  return null;` +
-          `};` +
-          `const KeywordMeta = () => {` +
-          `  useMeta({ name: 'keywords', content: (siteMetadata.keywords).join(',') });` +
-          `};` +
           `const Meta = () => {` +
-          `  const addTwitter = !!twitterSite || !!twitterCreator;` +
           `  useTitleTemplate(siteMetadata.titleTemplate);` +
-          `  useMeta({ name: 'author', content: siteMetadata.author });` +
-          `  useMeta({ name: 'description', content: siteMetadata.description });` +
-          `  useMeta({ property: 'og:description', content: siteMetadata.description });` +
-          `  useMeta({ property: 'og:site_name', content: siteMetadata.siteName });` +
-          `  useMeta({ property: 'og:image:width', content: '1200' });` +
-          `  useMeta({ property: 'og:image:height', content: '630' });` +
-          `  useMeta({ property: 'twitter:card', content: 'summary_large_image' });` +
-          `  useMeta({ property: 'og:site_name', content: siteMetadata.siteName });` +
-          `  useMeta({ name: 'generator', content: 'Wilson ${
-            require('wilson/package.json').version
-          }' });` +
-          `  return <Fragment>` +
-          `    {addTwitter ? <TwitterMeta /> : null }` +
-          `    {Array.isArray(siteMetadata.keywords) ? <KeywordMeta />: null }` +
-          `  </Fragment>;` +
+          `  return null;` +
           `};` +
           `export { markdownPages, routes, siteMetadata, Meta };`
         return transformJsx(code)

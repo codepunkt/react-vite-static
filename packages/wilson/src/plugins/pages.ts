@@ -38,9 +38,12 @@ const pagesPlugin = async (): Promise<Plugin> => {
         `  useMeta({ property: 'og:url', content: pageUrl });` +
         `  useMeta({ property: 'og:image', content: pageUrl + 'og-image.jpg' });` +
         `  useMeta({ property: 'og:image:secure_url', content: pageUrl + 'og-image.jpg' });` +
-        `  useTitle(title);` +
         `  useMeta({ property: 'og:title', content: title });` +
+        `  useMeta({ property: 'og:type', content: '${
+          page.frontmatter.ogType ?? 'website'
+        }' });` +
         `  useMeta({ property: 'twitter:title', content: title });` +
+        `  useTitle(title);` +
         `  return <Page />;` +
         `}`
 

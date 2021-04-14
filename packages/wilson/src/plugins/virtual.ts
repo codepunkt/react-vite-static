@@ -67,7 +67,6 @@ const virtualPlugin = async (): Promise<Plugin> => {
           `  useMeta({ property: 'og:site_name', content: siteMetadata.siteName });` +
           `  useMeta({ property: 'og:image:width', content: '1200' });` +
           `  useMeta({ property: 'og:image:height', content: '630' });` +
-          `  useMeta({ property: 'og:type', content: 'website' });` +
           `  useMeta({ property: 'twitter:card', content: 'summary_large_image' });` +
           `  useMeta({ property: 'og:site_name', content: siteMetadata.siteName });` +
           `  useMeta({ name: 'generator', content: 'Wilson ${

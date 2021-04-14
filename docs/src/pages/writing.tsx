@@ -18,4 +18,5 @@ export const Page: FunctionalComponent = () => (
 export const frontmatter: Frontmatter = {
   title: 'Writing',
   draft: false,
+  ogType: 'blog',
 }

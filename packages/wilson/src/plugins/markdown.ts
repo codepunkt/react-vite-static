@@ -19,6 +19,7 @@ import { transformJsx } from '../util'
 export interface Frontmatter {
   draft: boolean
   title: string
+  ogType?: string
   [key: string]: any
 }
 

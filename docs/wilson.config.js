@@ -12,6 +12,10 @@ module.exports = {
     twitterSite: '@wilsonjs_rocks',
     twitterCreator: '@code_punkt',
   },
+  pageLayouts: [
+    { pattern: 'docs/**/*', component: 'docs' },
+    { pattern: '**', component: 'default' },
+  ],
   opengraphImage: {
     background: '#ffffff',
     texts: [

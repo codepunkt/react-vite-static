@@ -1,9 +1,9 @@
 import { Frontmatter } from 'wilson'
 import { FunctionalComponent } from 'preact'
 
-export const Page: FunctionalComponent = () => <h1>{frontmatter.title}</h1>
+export const Page: FunctionalComponent = () => <h1>Wilson</h1>
 
 export const frontmatter: Frontmatter = {
-  title: 'Home',
+  title: 'Blazing fast static sites for the modern web',
   draft: false,
 }

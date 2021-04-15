@@ -7,7 +7,7 @@ import parse from 'rehype-parse'
 import stringify from 'rehype-stringify'
 import unified from 'unified'
 
-const createMetaCreator = (attributeName: string) => (
+const createMetaFactory = (attributeName: string) => (
   name: string,
   value: string
 ): HtmlTagDescriptor => ({
@@ -16,8 +16,8 @@ const createMetaCreator = (attributeName: string) => (
   attrs: { [attributeName]: name, content: value },
 })
 
-const createNameMeta = createMetaCreator('name')
-const createPropertyMeta = createMetaCreator('property')
+const createNameMeta = createMetaFactory('name')
+const createPropertyMeta = createMetaFactory('property')
 
 /**
  * Transforms index html.

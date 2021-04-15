@@ -19,10 +19,10 @@ export const getViteConfig = async ({
     },
     clearScreen: false,
     plugins: [
-      await virtualPlugin(),
       await indexHtmlPlugin(),
       await markdownPlugin(),
       await pagesPlugin(),
+      await virtualPlugin(),
       prefresh({}),
     ],
     build: {

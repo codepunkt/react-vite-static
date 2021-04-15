@@ -1,9 +1,10 @@
 import { Dependencies, Manifest, wrapManifest } from './manifest'
-import { readFile, toRoot, readJson, writeFile, getPageData } from './util'
+import { readFile, toRoot, readJson, writeFile } from './util'
 import { minify } from 'html-minifier-terser'
 import chalk from 'chalk'
 import size from 'brotli-size'
 import { resolveUserConfig } from './config'
+import { pages } from './page'
 
 type PrerenderFn = (
   url: string
@@ -38,12 +39,11 @@ const filterExistingTags = (template: string) => (path: string) =>
 
 export async function prerenderStaticPages() {
   try {
-    console.log(
+    console.info(
       `${chalk.yellow(
         `wilson v${require('wilson/package.json').version}`
       )} prerendering static pages...`
     )
-    const pages = await getPageData()
     const userConfig = await resolveUserConfig()
     const manifest = await readJson<Manifest>('./dist/manifest.json')
     const template = await readFile('./dist/index.html')
@@ -54,18 +54,20 @@ export async function prerenderStaticPages() {
     const sources: Record<string, string> = {}
     const linkDependencies: Record<string, Dependencies> = {}
 
-    for (const page of pages) {
+    for (const [path, page] of pages) {
       if (page.result.path.length > longestPath)
         longestPath = page.result.path.length
 
       const prerenderResult = await prerender(page.result.url)
       const wrappedManifest = wrapManifest(manifest)
       const pageDependencies = wrappedManifest.getPageDependencies(
-        `src/pages/${page.source.path}`
+        `src/pages/${path}`
       )
 
       prerenderResult.links.forEach((link) => {
-        const targetPage = pages.find((page) => page.result.url === link)
+        const targetPage = Array.from(pages.values()).find(
+          (page) => page.result.url === link
+        )
         if (targetPage && !linkDependencies[link]) {
           linkDependencies[
             link
@@ -111,10 +113,12 @@ export async function prerenderStaticPages() {
       sources[page.result.path] = source
     }
 
-    for (const page of pages) {
+    for (const [, page] of pages) {
       const filteredLinkDependencies: Record<string, Dependencies> = {}
       for (const path in linkDependencies) {
-        const targetPage = pages.find((page) => page.result.url === path)
+        const targetPage = Array.from(pages.values()).find(
+          (page) => page.result.url === path
+        )
         if (
           targetPage &&
           (typeof userConfig.linkPreloadTest !== 'function' ||
@@ -145,7 +149,7 @@ export async function prerenderStaticPages() {
       await writeFile(toRoot(`./dist/${page.result.path}`), minifiedSource)
     }
 
-    console.info(`${chalk.green('✓')} ${pages.length} pages rendered.`)
+    console.info(`${chalk.green('✓')} ${pages.size} pages rendered.`)
     for (const page of Object.keys(sources)) {
       console.info(
         `${chalk.grey(chalk.white.dim('dist/'))}${chalk.green(

@@ -1,5 +1,5 @@
 ---
-title: DocumentatioN!!
+title: DocumentatioN!
 ---
 
-Lorem ipsum...
+Lorem ipsum....

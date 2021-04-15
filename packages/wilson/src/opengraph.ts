@@ -1,9 +1,10 @@
 import Jimp from 'jimp'
 import wlt from '@codepunkt/wasm-layout-text'
 import { resolveUserConfig } from './config'
-import { getPageData, hexToRgb, toRoot } from './util'
+import { hexToRgb, toRoot } from './util'
 import { readFile } from 'fs-extra'
 import { dirname } from 'path'
+import { pages } from './page'
 
 export async function createOpengraphImages() {
   const userConfig = await resolveUserConfig()
@@ -27,7 +28,7 @@ export async function createOpengraphImages() {
     throw new Error(`opengraph background image is not ${width} x ${height}!`)
   }
 
-  for (const page of await getPageData()) {
+  for (const [, page] of pages) {
     let textLayers = await Promise.all(
       texts.map(
         async ({

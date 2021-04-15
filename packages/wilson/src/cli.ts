@@ -7,7 +7,7 @@ import { serve } from './scripts/serve'
 
 const argv: any = minimist(process.argv.slice(2))
 
-console.log(
+console.info(
   boxen(
     `You are running ${chalk.cyan(
       `wilson ${require('wilson/package.json').version}`

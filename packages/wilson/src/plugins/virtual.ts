@@ -1,7 +1,9 @@
 import { Plugin } from 'vite'
 import { LoadResult, ResolveIdResult } from 'rollup'
-import { getPageData, toRoot, transformJsx } from '../util'
+import { toRoot, transformJsx } from '../util'
 import { resolveSiteData } from '../config'
+import { mapPagePathToUrl, readPageFiles } from '../page'
+import { extname } from 'path'
 
 /**
  * Provides virtual import of routes and markdown page metadata.
@@ -27,25 +29,28 @@ const virtualPlugin = async (): Promise<Plugin> => {
      */
     async load(id: string): Promise<LoadResult> {
       if (id.startsWith(virtualImportPath)) {
-        const pages = await getPageData()
+        const pageFiles = await readPageFiles()
         const markdownPages = JSON.stringify(
-          pages.filter((page) => page.type === 'markdown')
+          pageFiles.filter((page) => extname(page.path) === '.md')
         )
 
         const code =
           `import { h } from 'preact';` +
           `import { lazy } from 'preact-iso';` +
-          pages
+          pageFiles
             .map(
-              (page, i) =>
+              (pageFile, i) =>
                 `const Page${i} = lazy(() => import('${toRoot(
-                  `/src/pages/${page.source.path}`
+                  `/src/pages/${pageFile.path}`
                 )}'));`
             )
             .join('\n') +
           `const routes = [` +
-          pages
-            .map((page, i) => `<Page${i} path="${page.result.url}" />`)
+          pageFiles
+            .map(
+              (pageFile, i) =>
+                `<Page${i} path="${mapPagePathToUrl(pageFile.path)}" />`
+            )
             .join(',') +
           `];` +
           `const markdownPages = ${markdownPages};` +

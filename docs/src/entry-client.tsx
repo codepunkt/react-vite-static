@@ -10,7 +10,18 @@ if (process.env.NODE_ENV === 'production') {
     string,
     Dependencies
   >
-  const insertedPreloads: Set<string> = new Set()
+  const findElements = (query: string): HTMLElement[] =>
+    Array.from(document.querySelectorAll(query))
+  const assets: Set<string> = new Set([
+    ...(findElements(
+      'head link[rel=stylesheet], head link[rel=preload], head link[rel=modulepreload]'
+    )
+      .map((element) => element.getAttribute('href'))
+      .filter(Boolean) as string[]),
+    ...(findElements('head script[src]')
+      .map((element) => element.getAttribute('src'))
+      .filter(Boolean) as string[]),
+  ])
 
   const vnodeHook = ({
     type,
@@ -33,15 +44,16 @@ if (process.env.NODE_ENV === 'production') {
           ...(pathPreloads[props.href!] ?? { css: [] }).css,
         ]
         preloads.forEach((href) => {
-          if (!insertedPreloads.has(href)) {
+          href = `/${href}`
+          if (!assets.has(href)) {
             const tag = document.createElement('link')
             const isScript = href.endsWith('.js')
             tag.setAttribute('rel', isScript ? 'modulepreload' : 'preload')
             tag.setAttribute('as', isScript ? 'script' : 'style')
             tag.setAttribute('crossorigin', '')
-            tag.setAttribute('href', `/${href}`)
+            tag.setAttribute('href', href)
             document.head.appendChild(tag)
-            insertedPreloads.add(href)
+            assets.add(href)
           }
         })
       }

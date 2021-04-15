@@ -1,7 +1,6 @@
 import readdirp from 'readdirp'
 import { readFile, writeFile } from 'fs-extra'
 import { extname, basename } from 'path'
-import { Frontmatter } from './plugins/markdown'
 import grayMatter from 'gray-matter'
 import { pageDataPath, toRoot } from './util'
 import { objectSourceToObject } from './eval'
@@ -16,19 +15,7 @@ import {
   Identifier,
 } from 'estree'
 import { generate } from 'astring'
-
-export interface Page {
-  type: keyof typeof pageTypes
-  frontmatter: Frontmatter
-  source: {
-    path: string
-    absolutePath: string
-  }
-  result: {
-    path: string
-    url: string
-  }
-}
+import { Frontmatter, Page } from './types'
 
 const pages: Page[] = []
 

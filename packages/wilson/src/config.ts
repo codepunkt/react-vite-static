@@ -1,4 +1,3 @@
-import { Frontmatter } from './plugins/markdown'
 import { UserConfig as ViteUserConfig } from 'vite'
 import prefresh from '@prefresh/vite'
 import { toRoot } from './util'
@@ -6,51 +5,10 @@ import markdownPlugin from './plugins/markdown'
 import virtualPlugin from './plugins/virtual'
 import pagesPlugin from './plugins/pages'
 import indexHtmlPlugin from './plugins/indexHtml'
-import { Page } from './page'
-import { SiteData } from './types'
+import { SiteData, UserConfig } from './types'
 
-export interface Options {
-  /**
-   * When defined, this iss used to generate open graph images.
-   */
-  opengraphImage?: {
-    background: string
-    texts: OpengraphImageText[]
-  }
-  /**
-   * Mapping of layout components to glob pattern, targeting markdown documents
-   */
-  pageLayouts?: PageLayouts
-  /**
-   *
-   */
-  linkPreloadTest: (targetPage: Page) => boolean
-  siteData: SiteData
-}
-
-export type OptionsWithDefaults = Options &
-  Required<Pick<Options, 'pageLayouts' | 'opengraphImage'>>
-
-/**
- * Represents a single text rendered onto an opengraph image.
- */
-interface OpengraphImageText {
-  text: (frontmatter?: Frontmatter) => string
-  font: string
-  fontSize?: number
-  color?: string
-  x?: number
-  y?: number
-  maxWidth?: number
-  maxHeight?: number
-  horizontalAlign?: 'left' | 'center' | 'right'
-  verticalAlign?: 'top' | 'center' | 'bottom'
-}
-
-type PageLayouts = Array<{
-  component: string
-  pattern?: string
-}>
+export type OptionsWithDefaults = UserConfig &
+  Required<Pick<UserConfig, 'pageLayouts' | 'opengraphImage'>>
 
 let options: OptionsWithDefaults
 
@@ -120,5 +78,34 @@ export const getViteConfig = async ({
       jsxFactory: 'h',
       jsxFragment: 'Fragment',
     },
+  }
+}
+
+import { resolve } from 'path'
+import { pathExists } from 'fs-extra'
+
+export async function resolveUserConfig(
+  root: string = process.cwd()
+): Promise<UserConfig> {
+  const configPath = resolve(root, 'wilson.config.js')
+  const hasUserConfig = await pathExists(configPath)
+
+  if (!hasUserConfig) {
+    throw new Error(`no userconfig found.`)
+  }
+
+  // always delete cache first before loading config
+  delete require.cache[configPath]
+
+  const userConfig: UserConfig = require(configPath)
+  return userConfig
+}
+
+export async function resolveSiteData(
+  root: string = process.cwd()
+): Promise<SiteData> {
+  const userConfig = await resolveUserConfig(root)
+  return {
+    ...userConfig.siteData,
   }
 }

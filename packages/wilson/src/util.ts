@@ -1,6 +1,6 @@
 import { dirname, join } from 'path'
 import { readFile as read, writeFile as write, ensureDir } from 'fs-extra'
-import { Page } from './page'
+import { Page } from './types'
 import { transform } from 'sucrase'
 
 /**

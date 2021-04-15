@@ -11,17 +11,7 @@ import {
 } from '../transformAssetUrls'
 import { TransformResult } from 'rollup'
 import { getOptions } from '../config'
-
-/**
- * Page frontmatter.
- */
-export interface Frontmatter {
-  title: string
-  draft?: boolean
-  layout?: string
-  ogType?: string
-  [key: string]: any
-}
+import { Frontmatter } from '../types'
 
 /**
  * Defines attributes on HTML/SVG elements that should be considered when

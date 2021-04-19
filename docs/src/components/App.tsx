@@ -1,5 +1,4 @@
-import './app.scss'
-import Header from './header'
+import './app.css'
 import { routes, siteData } from 'wilson/virtual'
 import { ErrorBoundary, LocationProvider, Router } from 'preact-iso'
 import { FunctionalComponent } from 'preact'
@@ -10,16 +9,13 @@ const NotFound: FunctionalComponent = () => <>Not Found</>
 const App: FunctionalComponent = () => {
   useTitleTemplate(siteData.titleTemplate)
   return (
-    <>
-      <Header />
-      <LocationProvider>
-        <div>
-          <ErrorBoundary>
-            <Router>{[...routes, <NotFound default />]}</Router>
-          </ErrorBoundary>
-        </div>
-      </LocationProvider>
-    </>
+    <LocationProvider>
+      <div>
+        <ErrorBoundary>
+          <Router>{[...routes, <NotFound default />]}</Router>
+        </ErrorBoundary>
+      </div>
+    </LocationProvider>
   )
 }
 

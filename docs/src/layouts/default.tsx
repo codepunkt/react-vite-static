@@ -1,9 +1,18 @@
 import { Frontmatter } from 'wilson'
 import { FunctionalComponent } from 'preact'
+import classes from './default.module.scss'
+import Header from '../components/header'
 
 const DefaultLayout: FunctionalComponent<{ frontmatter: Frontmatter }> = ({
   children,
   frontmatter,
-}) => <div>{children}</div>
+}) => {
+  return (
+    <div className={classes.container}>
+      <Header />
+      <main>{children}</main>
+    </div>
+  )
+}
 
 export default DefaultLayout

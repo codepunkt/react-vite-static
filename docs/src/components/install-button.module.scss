@@ -1,0 +1,29 @@
+.button {
+  background: #f9fafb;
+  margin-left: 1rem;
+  color: #111827;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  font-family: var(--font-family-mono);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #e5e7eb;
+
+  span > span {
+    color: #6b7280;
+  }
+  svg {
+    margin-left: 1rem;
+    color: #9ca3af;
+  }
+}
+
+.button:hover {
+  border-color: #9ca3af;
+  svg {
+    color: inherit;
+  }
+}

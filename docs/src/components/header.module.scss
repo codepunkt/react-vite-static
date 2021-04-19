@@ -1,0 +1,49 @@
+.header {
+  margin: 0 auto;
+  padding: 1rem 0;
+  display: flex;
+  height: 5rem;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 3rem;
+  color: #6b7280;
+
+  a {
+    text-decoration: none;
+    color: inherit;
+    font-weight: 600;
+    &:hover {
+      color: #633b57;
+    }
+  }
+}
+
+.grow {
+  flex-grow: 1;
+}
+
+.github {
+  margin-left: 2.5rem;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  margin-right: 2.5rem;
+
+  img {
+    height: 2.4rem;
+    margin-right: 0.6rem;
+  }
+
+  span {
+    font-size: 1.8rem;
+    font-weight: 300;
+    color: #111827;
+  }
+
+  &:hover span {
+    color: #633b57;
+  }
+}

@@ -1,4 +1,3 @@
-import { Page } from './types'
 import readdirp from 'readdirp'
 import { basename, extname } from 'path'
 import { pageTypes } from './plugins/pages'
@@ -40,10 +39,4 @@ export const mapPagePathToUrl = (pagePath: string): string => {
     .replace(pageExtension, '')
     .toLowerCase()
     .replace(/index$/, '')}/`.replace(/\/\/$/, '/')
-}
-
-export const pages: Map<String, Page> = new Map()
-
-export const setPage = (path: string, page: Page): void => {
-  pages.set(path, page)
 }

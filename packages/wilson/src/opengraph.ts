@@ -4,7 +4,7 @@ import { resolveUserConfig } from './config'
 import { hexToRgb, toRoot } from './util'
 import { readFile } from 'fs-extra'
 import { dirname } from 'path'
-import { pages } from './page'
+import cache from './cache'
 
 export async function createOpengraphImages() {
   const userConfig = await resolveUserConfig()
@@ -28,7 +28,7 @@ export async function createOpengraphImages() {
     throw new Error(`opengraph background image is not ${width} x ${height}!`)
   }
 
-  for (const [, page] of pages) {
+  for (const [, page] of cache.pages) {
     let textLayers = await Promise.all(
       texts.map(
         async ({

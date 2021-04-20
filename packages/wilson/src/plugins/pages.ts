@@ -18,7 +18,8 @@ import {
 } from 'estree'
 import { generate } from 'astring'
 import { objectSourceToObject } from '../eval'
-import { mapPagePathToUrl, setPage } from '../page'
+import { mapPagePathToUrl } from '../page'
+import cache from '../cache'
 
 /**
  * Allowed file extensions for pages.
@@ -140,7 +141,7 @@ const pagesPlugin = async (): Promise<Plugin> => {
         },
       }
 
-      setPage(path, page)
+      cache.pages.set(path, page)
 
       const pageLayout =
         page.frontmatter.layout ?? typeof pageLayouts === 'undefined'

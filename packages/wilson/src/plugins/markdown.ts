@@ -63,16 +63,6 @@ const markdownPlugin = async (): Promise<Plugin> => {
       const extension = extname(id)
       if (extension !== '.md') return
 
-      const parsed = grayMatter(code, {})
-      const parsedFrontmatter = parsed.data as Frontmatter
-
-      if (Object.values(parsedFrontmatter).length === 0) {
-        throw new Error('markdown has no frontmatter!')
-      }
-      if (parsedFrontmatter.title === undefined) {
-        throw new Error(`frontmatter has no title!`)
-      }
-
       const processor = unified()
         .use(remarkParse)
         // apply plugins that change MDAST
@@ -87,6 +77,7 @@ const markdownPlugin = async (): Promise<Plugin> => {
           closeSelfClosing: true,
         })
 
+      const parsed = grayMatter(code, {})
       const vfile = await processor.process(parsed.content)
       const html = vfile.contents as string
       // @ts-ignore

@@ -30,7 +30,7 @@ const createPropertyMeta = createMetaFactory('property')
  */
 const indexHtmlPlugin = async (): Promise<Plugin> => {
   return {
-    name: 'vite-plugin-wilson-indexhtml',
+    name: 'wilson-plugin-indexhtml',
     enforce: 'pre',
 
     async transformIndexHtml(html: string) {

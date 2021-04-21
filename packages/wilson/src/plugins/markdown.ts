@@ -56,7 +56,7 @@ function htmlToPreact(html: string, relativeAssetUrls: string[]): string {
  */
 const markdownPlugin = async (): Promise<Plugin> => {
   return {
-    name: 'vite-plugin-wilson-markdown',
+    name: 'wilson-plugin-markdown',
     enforce: 'pre',
 
     async transform(code: string, id: string): Promise<TransformResult> {

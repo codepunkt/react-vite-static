@@ -105,7 +105,7 @@ const getFrontmatter = async (
  */
 const pagesPlugin = async (): Promise<Plugin> => {
   return {
-    name: 'vite-plugin-wilson-pages',
+    name: 'wilson-plugin-pages',
     enforce: 'pre',
 
     async transform(code: string, id: string): Promise<TransformResult> {

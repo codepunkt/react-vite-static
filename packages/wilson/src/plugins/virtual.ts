@@ -12,7 +12,7 @@ const virtualPlugin = async (): Promise<Plugin> => {
   const virtualImportPath = 'wilson/virtual'
 
   return {
-    name: 'vite-plugin-wilson-core',
+    name: 'wilson-plugin-virtual',
     enforce: 'pre',
 
     /**

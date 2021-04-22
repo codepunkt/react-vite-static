@@ -54,7 +54,7 @@ const virtualPlugin = async (): Promise<Plugin> => {
             .join(',') +
           `];` +
           `const markdownPages = ${markdownPages};` +
-          `const siteData = ${JSON.stringify(resolveSiteData())};` +
+          `const siteData = ${JSON.stringify(await resolveSiteData())};` +
           `export { markdownPages, routes, siteData };`
         return transformJsx(code)
       }

@@ -176,7 +176,9 @@ const pagesPlugin = async (): Promise<Plugin> => {
         }' });` +
         `  useMeta({ property: 'twitter:title', content: title });` +
         `  useTitle(title);` +
-        `  return <Layout frontmatter={${JSON.stringify(page.frontmatter)}}>` +
+        `  return <Layout frontmatter={${JSON.stringify(
+          page.frontmatter
+        )}} toc={${JSON.stringify(cache.markdown.toc.get(id))}}>` +
         `    <Page />` +
         `  </Layout>;` +
         `}`

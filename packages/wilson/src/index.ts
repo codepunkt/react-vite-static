@@ -1,2 +1,2 @@
 export { Dependencies } from './manifest'
-export { Frontmatter, Page, SiteData, UserConfig } from './types'
+export { Frontmatter, LayoutProps, Page, SiteData, UserConfig } from './types'

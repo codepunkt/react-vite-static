@@ -28,20 +28,40 @@
 
 .links {
   list-style: none;
-  margin: 0;
-  padding: 0;
+  margin: 0.35rem 0;
+  padding: 0 0 0 1rem;
   line-height: 2rem;
+  font-size: 0.9rem;
 
+  li {
+    margin: 0.35rem 0;
+  }
+  li li {
+    margin: -0.2rem 0;
+  }
+  li li[data-active] a {
+    color: #646cff;
+  }
   a {
     text-decoration: none;
     color: #111827;
-    padding: 0.35rem 1.5rem 0.35rem 0.75rem;
-
+    padding: 0.1rem 1.5rem 0.1rem 0.75rem;
+    border-left: 5px solid #fff;
     &:hover,
     &[data-active] {
       color: #646cff;
     }
+
+    &[data-active] {
+      border-left: 5px solid #646cff;
+      font-weight: 600;
+    }
   }
+}
+
+.toplevel {
+  font-size: 1rem;
+  margin-left: 0 0 0 -1rem;
 }
 
 .markdown {
@@ -52,6 +72,10 @@
   h5,
   h6 {
     color: #111827;
+  }
+
+  h2 {
+    border-bottom: 1px solid #e8e8e9;
   }
 
   a {

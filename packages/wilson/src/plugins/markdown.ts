@@ -2,7 +2,6 @@ import { extname } from 'path'
 import grayMatter from 'gray-matter'
 import { Plugin } from 'vite'
 import { TransformResult } from 'rollup'
-import { Frontmatter } from '../types'
 import rehypeSlug from 'rehype-slug'
 import remarkParse from 'remark-parse'
 import remarkToRehype from 'remark-rehype'
@@ -10,7 +9,9 @@ import rehypeStringify from 'rehype-stringify'
 import remarkStringify from 'remark-stringify'
 import unified from 'unified'
 import rehypeRaw from 'rehype-raw'
+import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import remarkRelativeAssets from '../unified/remark-relative-assets'
+import rehypeExtractToc from '../unified/rehype-extract-toc'
 
 /**
  * Defines attributes on HTML/SVG elements that should be considered when
@@ -72,6 +73,9 @@ const markdownPlugin = async (): Promise<Plugin> => {
         // apply plugins that change HAST
         .use(remarkRelativeAssets, { assetUrlPrefix, assetUrlTagConfig })
         .use(rehypeSlug)
+        .use(rehypeExtractToc, { moduleId: id })
+        // TODO: configure autolink headings
+        .use(rehypeAutolinkHeadings, {})
         .use(rehypeStringify, {
           allowDangerousHtml: true,
           closeSelfClosing: true,

@@ -33,6 +33,17 @@ export interface Page {
   }
 }
 
+export interface Heading {
+  level: number
+  text: string
+  slug: string
+}
+
+export interface LayoutProps {
+  frontmatter: Frontmatter
+  toc: Heading[]
+}
+
 export type PageLayouts = Array<{
   component: string
   pattern?: string

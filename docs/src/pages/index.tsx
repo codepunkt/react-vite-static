@@ -20,7 +20,7 @@ export const Page: FunctionalComponent = () => {
           everything else.
         </p>
         <div className={classes.ctaWrapper}>
-          <a href="docs" className={classes.cta}>
+          <a href="/docs/" className={classes.cta}>
             Get started
           </a>
           <InstallButton />

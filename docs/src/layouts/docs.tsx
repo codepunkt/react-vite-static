@@ -99,19 +99,19 @@ const DocsLayout: FunctionalComponent<LayoutProps> = ({
           <p className={classes.headline}>Documentation</p>
           <ol className={`${classes.links} ${classes.toplevel}`}>
             <ActiveSectionContext.Provider value={activeSection}>
-              <MenuItem toc={toc} href="/docs/why">
+              <MenuItem toc={toc} href="/docs/why/">
                 Why Wilson?
               </MenuItem>
-              <MenuItem toc={toc} href="/docs">
+              <MenuItem toc={toc} href="/docs/">
                 Getting started
               </MenuItem>
-              <MenuItem toc={toc} href="/docs/features">
+              <MenuItem toc={toc} href="/docs/features/">
                 Features
               </MenuItem>
-              <MenuItem toc={toc} href="/docs/deploy">
+              <MenuItem toc={toc} href="/docs/deploy/">
                 Deploying
               </MenuItem>
-              <MenuItem toc={toc} href="/docs/comparison">
+              <MenuItem toc={toc} href="/docs/comparison/">
                 Comparison
               </MenuItem>
             </ActiveSectionContext.Provider>

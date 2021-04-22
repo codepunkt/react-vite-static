@@ -1,10 +1,12 @@
 import { FunctionalComponent } from 'preact'
 import classes from './header.module.scss'
 import logoSrc from '../assets/wilson.svg'
+import { useLocation } from 'preact-iso'
 
 const Header: FunctionalComponent<{ withLogo?: boolean }> = ({
   withLogo = false,
 }) => {
+  const isDocumentation = useLocation().url.startsWith('/docs/')
   return (
     <header className={classes.header}>
       <div className={classes.innerHeader}>
@@ -16,12 +18,19 @@ const Header: FunctionalComponent<{ withLogo?: boolean }> = ({
         )}
         <div>Search</div>
         <div className={classes.grow} />
-        <a href="/docs">Documentation</a>
         <a
-          className={classes.github}
+          className={classes.headerLink}
+          data-active={isDocumentation}
+          href="/docs/"
+        >
+          Documentation
+        </a>
+        <a
+          className={classes.headerLink}
           aria-label="GitHub repository"
           href="https://github.com/wilsonjs/wilson"
         >
+          <span>GitHub</span>
           <svg width="24" height="24" viewBox="0 0 16 16" fill="currentColor">
             <path
               fill-rule="evenodd"

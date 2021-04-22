@@ -16,16 +16,29 @@
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid #e5e7eb;
-  color: #6b7280;
+  color: #111827;
   height: 5rem;
+}
 
-  a {
-    text-decoration: none;
-    color: inherit;
+.headerLink {
+  text-decoration: none;
+  color: inherit;
+  font-weight: 4400;
+  margin-left: 2.5rem;
+  padding: 0.35rem;
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    color: #646cff;
+  }
+  &[data-active] {
+    color: #000;
     font-weight: 600;
-    &:hover {
-      color: #633b57;
-    }
+  }
+
+  span + svg {
+    margin-left: 0.5rem;
   }
 }
 
@@ -33,14 +46,11 @@
   flex-grow: 1;
 }
 
-.github {
-  margin-left: 2.5rem;
-}
-
 .logo {
   display: flex;
   align-items: center;
   margin-right: 2.5rem;
+  text-decoration: none;
 
   img {
     height: 2.4rem;
@@ -51,9 +61,5 @@
     font-size: 1.8rem;
     font-weight: 300;
     color: #111827;
-  }
-
-  &:hover span {
-    color: #633b57;
   }
 }

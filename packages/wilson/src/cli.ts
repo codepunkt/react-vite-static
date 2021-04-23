@@ -20,6 +20,7 @@ console.info(
     }
   )
 )
+
 async function cli(command: string) {
   if (command === 'dev') {
     try {
@@ -48,4 +49,6 @@ async function cli(command: string) {
   }
 }
 
-cli(argv._[0] || 'dev')
+cli(argv._[0] || 'dev').catch((e) => {
+  console.error(e)
+})

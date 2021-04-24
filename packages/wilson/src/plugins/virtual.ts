@@ -45,12 +45,9 @@ const virtualPlugin = async (): Promise<Plugin> => {
           pages.push(await getPageData(fullPath))
         }
 
-        const markdownPages = JSON.stringify(
-          pages.filter((page) => extname(page.source.path) === '.md')
-        )
-
         const code =
-          `import { h } from 'preact';` +
+          `import { createContext, h } from 'preact';` +
+          `import { useContext } from 'preact/hooks';` +
           `import { lazy } from 'preact-iso';` +
           pages
             .map(
@@ -68,9 +65,15 @@ const virtualPlugin = async (): Promise<Plugin> => {
             )
             .join(',') +
           `];` +
-          `const markdownPages = ${markdownPages};` +
+          `const PageContext = createContext(null);` +
+          `const PageProvider = ({ children }) => (` +
+          `  <PageContext.Provider value={${JSON.stringify(pages)}}>` +
+          `    {children}` +
+          `  </PageContext.Provider>` +
+          `);` +
+          `const usePages = () => useContext(PageContext);` +
           `const siteData = ${JSON.stringify(await resolveSiteData())};` +
-          `export { markdownPages, routes, siteData };`
+          `export { routes, siteData, PageProvider, usePages };`
         return transformJsx(code)
       }
     },

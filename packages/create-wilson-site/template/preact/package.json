@@ -15,7 +15,7 @@
     "hoofd": "^1.2.2",
     "preact": "^10.5.13",
     "preact-iso": "^1.1.1",
-    "wilson": "1.0.0-beta.4"
+    "wilson": "1.0.0-beta.5"
   },
   "devDependencies": {
     "@prefresh/vite": "^2.2.0",

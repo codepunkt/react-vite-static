@@ -5,6 +5,7 @@ import Header from '../components/header'
 import Link from '../components/link'
 import { useLocation } from 'preact-iso'
 import { useContext, useEffect, useState } from 'preact/hooks'
+import '../assets/global.scss'
 
 const ActiveSectionContext = createContext<string | null>(null)
 

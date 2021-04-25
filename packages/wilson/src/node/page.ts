@@ -1,6 +1,6 @@
 import { basename, extname } from 'path'
 import { pageTypes } from './plugins/pages'
-import { Frontmatter, Page } from './types'
+import { Frontmatter, Page } from '../types'
 import grayMatter from 'gray-matter'
 import { readFile } from 'fs-extra'
 import { transpileModule, ModuleKind, JsxEmit } from 'typescript'

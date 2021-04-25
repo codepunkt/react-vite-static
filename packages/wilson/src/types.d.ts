@@ -1,5 +1,3 @@
-import { pageTypes } from './plugins/pages'
-
 export interface SiteData {
   lang?: string
   titleTemplate: string
@@ -12,6 +10,12 @@ export interface SiteData {
   keywords?: string[]
 }
 
+export interface Dependencies {
+  js: string[]
+  css: string[]
+  assets?: string[]
+}
+
 export interface Frontmatter {
   title: string
   tags: string[]
@@ -22,7 +26,7 @@ export interface Frontmatter {
 }
 
 export interface Page {
-  type: keyof typeof pageTypes
+  type: 'typescript' | 'markdown'
   frontmatter: Frontmatter
   source: {
     path: string

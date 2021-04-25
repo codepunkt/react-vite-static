@@ -1,7 +1,7 @@
 import { Element, Node, Parent, Properties, Text } from 'hast'
 import { VFile } from 'vfile'
 import cache from '../cache'
-import { Heading } from '../types'
+import { Heading } from '../../types'
 
 export function findHeadings(node: Node): Heading[] {
   let headingNodes: Heading[] = []

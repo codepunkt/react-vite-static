@@ -4,6 +4,7 @@ import markdownPlugin from './plugins/markdown'
 import virtualPlugin from './plugins/virtual'
 import pagesPlugin from './plugins/pages'
 import indexHtmlPlugin from './plugins/indexHtml'
+import { join } from 'path'
 
 interface ViteConfigOptions {
   ssr?: boolean
@@ -19,6 +20,17 @@ export const getViteConfig = async ({
     },
     clearScreen: false,
     plugins: [
+      {
+        name: 'vite-plugin-wilson-entry',
+        resolveId(id) {
+          return id === '/@wilson/client.js' ? id : undefined
+        },
+        load(id) {
+          if (id === '/@wilson/client.js') {
+            return `import "wilson/dist/client/main.js";`
+          }
+        },
+      },
       await indexHtmlPlugin(),
       await markdownPlugin(),
       await pagesPlugin(),
@@ -35,7 +47,9 @@ export const getViteConfig = async ({
       rollupOptions: {
         // important so that each page chunk and the index export things for each other
         preserveEntrySignatures: 'allow-extension',
-        input: ssr ? 'src/entry-server.tsx' : 'index.html',
+        input: ssr
+          ? join(__dirname, '../client/ssr/serverRender.js')
+          : 'index.html',
       },
       manifest: ssr ? false : true,
       minify: ssr ? false : !process.env.DEBUG,

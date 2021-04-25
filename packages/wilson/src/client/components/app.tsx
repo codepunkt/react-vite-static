@@ -1,4 +1,3 @@
-import './app.css'
 import { routes, siteData, PageProvider } from 'wilson/virtual'
 import { ErrorBoundary, LocationProvider, Router } from 'preact-iso'
 import { FunctionalComponent } from 'preact'

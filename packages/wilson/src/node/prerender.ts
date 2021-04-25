@@ -1,10 +1,11 @@
-import { Dependencies, Manifest, wrapManifest } from './manifest'
+import { Manifest, wrapManifest } from './manifest'
 import { readFile, toRoot, readJson, writeFile } from './util'
 import { minify } from 'html-minifier-terser'
 import chalk from 'chalk'
 import size from 'brotli-size'
 import { resolveUserConfig } from './config'
 import cache from './cache'
+import { Dependencies } from '../types'
 
 type PrerenderFn = (
   url: string
@@ -47,8 +48,9 @@ export async function prerenderStaticPages() {
     const userConfig = await resolveUserConfig()
     const manifest = await readJson<Manifest>('./dist/manifest.json')
     const template = await readFile('./dist/index.html')
-    const prerender = require(toRoot('./.wilson/ssr/entry-server.js'))
-      .prerender as PrerenderFn
+    const { renderToString }: { renderToString: PrerenderFn } = require(toRoot(
+      './.wilson/ssr/serverRender.js'
+    ))
 
     let longestPath = 0
     const sources: Record<string, string> = {}
@@ -58,7 +60,7 @@ export async function prerenderStaticPages() {
       if (page.result.path.length > longestPath)
         longestPath = page.result.path.length
 
-      const prerenderResult = await prerender(page.result.url)
+      const prerenderResult = await renderToString(page.result.url)
       const wrappedManifest = wrapManifest(manifest)
       const pageDependencies = wrappedManifest.getPageDependencies(
         `src/pages/${page.source.path}`

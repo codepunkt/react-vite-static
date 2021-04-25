@@ -12,6 +12,7 @@ const nodeConfig = {
   input: {
     index: path.resolve(__dirname, 'src/index.ts'),
     cli: path.resolve(__dirname, 'src/cli.ts'),
+    client: path.resolve(__dirname, 'src/client/main.tsx'),
   },
   output: {
     dir: path.resolve(__dirname, 'dist'),

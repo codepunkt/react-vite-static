@@ -13,7 +13,8 @@
     "docs:dev": "yarn workspace @wilson/docs dev",
     "docs:serve": "yarn workspace @wilson/docs serve",
     "wilson:build": "yarn workspace wilson build",
-    "dev": "run-s wilson:build docs:dev",
+    "wilson:dev": "yarn workspace wilson build",
+    "dev": "run-s wilson:dev docs:dev",
     "build": "run-s wilson:build docs:build docs:serve"
   },
   "engines": {

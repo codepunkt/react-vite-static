@@ -1,6 +1,7 @@
 import { Frontmatter } from 'wilson'
 import { FunctionalComponent } from 'preact'
 import classes from './default.module.scss'
+import '../assets/global.scss'
 
 const DefaultLayout: FunctionalComponent<{ frontmatter: Frontmatter }> = ({
   children,

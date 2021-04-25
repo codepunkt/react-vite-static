@@ -1,4 +1,5 @@
 import { extname } from 'path'
+import { Dependencies } from '../types'
 
 // @TODO: read types from updated vite version, PR #2901
 // https://github.com/vitejs/vite/pull/2901
@@ -12,12 +13,6 @@ interface ManifestChunk {
   isDynamicEntry?: boolean
   imports?: string[]
   dynamicImports?: string[]
-}
-
-export interface Dependencies {
-  js: string[]
-  css: string[]
-  assets?: string[]
 }
 
 export const wrapManifest = (manifest: Manifest) => {

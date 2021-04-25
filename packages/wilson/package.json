@@ -27,8 +27,14 @@
     "url": "https://github.com/codepunkt/wilson/issues"
   },
   "scripts": {
-    "build": "rm -rf dist && rollup -c",
-    "tsc": "rm -rf dist && tsc"
+    "rollup": "rm -rf dist && rollup -c",
+    "build": "rm -rf ./dist && run-p \"build-*\"",
+    "build-node": "tsc -p src/node",
+    "build-client": "tsc -p src/client",
+    "dev": "rm -rf ./dist && run-p \"dev-*\"",
+    "dev-node": "tsc -w -p src/node",
+    "dev-client": "tsc -w -p src/client",
+    "prepare": "npm run build"
   },
   "dependencies": {
     "@codepunkt/wasm-layout-text": "^3.0.0",

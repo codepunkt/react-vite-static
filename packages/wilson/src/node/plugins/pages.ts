@@ -11,7 +11,6 @@ import cache from '../cache'
  * Allowed file extensions for pages.
  */
 export const pageTypes = {
-  javascript: ['.js', '.jsx'],
   typescript: ['.tsx'],
   markdown: ['.md'],
 }

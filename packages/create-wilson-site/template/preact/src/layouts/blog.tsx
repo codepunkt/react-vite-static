@@ -1,6 +1,7 @@
 import { LayoutProps } from 'wilson'
 import { FunctionalComponent } from 'preact'
 import classes from './blog.module.scss'
+import '../assets/global.scss'
 
 const BlogLayout: FunctionalComponent<LayoutProps> = ({
   children,

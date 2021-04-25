@@ -1,4 +1,4 @@
-import { SiteData, UserConfig } from './types'
+import { SiteData, UserConfig } from '../types'
 import { resolve } from 'path'
 import { pathExists } from 'fs-extra'
 

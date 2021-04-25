@@ -1,4 +1,4 @@
-import { Heading, Page } from './types'
+import { Heading, Page } from '../types'
 
 interface PluginCache {
   collections: {

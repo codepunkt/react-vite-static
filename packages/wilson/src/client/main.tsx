@@ -1,8 +1,15 @@
+import App from './components/app'
 import { hydrate } from 'preact-iso'
 import { options, VNode } from 'preact'
-import App from './components/app'
-import { Dependencies } from 'wilson'
-// import 'preact/debug'
+import { Dependencies } from '../types'
+
+let app = <App />
+// if (import.meta.hot) {
+//     app = something else
+// }
+
+// @TODO: whats SSRContextProvider in react-plugin-pages?
+hydrate(app, document.body)
 
 if (process.env.NODE_ENV === 'production') {
   // @ts-ignore
@@ -66,5 +73,3 @@ if (process.env.NODE_ENV === 'production') {
     vnodeHook(vnode)
   }
 }
-
-hydrate(<App />, document.body)

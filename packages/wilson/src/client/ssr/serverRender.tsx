@@ -1,5 +1,7 @@
+// @TODO understand and possibly copy vite-plugin-react-pages ssrData export mechanism
+// @TODO understand and possibly copy vite-plugin-react-pages dataCacheCtx.Provider mechanism
 import preactRenderToString from 'preact-render-to-string'
-import App from './components/app'
+import App from '../components/app'
 import { options, VNode } from 'preact'
 import { toStatic } from 'hoofd/preact'
 
@@ -21,11 +23,11 @@ interface PrerenderResult {
   links: Set<string>
 }
 
-export async function prerender(url: string): Promise<PrerenderResult> {
+export async function renderToString(url: string): Promise<PrerenderResult> {
   const maxDepth = 10
   let tries = 0
 
-  // @TODO this is a hack that is required because preact-iso doesn't allow
+  // this is a hack that is required because preact-iso doesn't allow
   // passing a URL via props.
   // @ts-ignore
   global.location = new URL(url, 'http://localhost/')

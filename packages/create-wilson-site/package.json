@@ -17,8 +17,9 @@
     "yarn": "1.22.10"
   },
   "scripts": {
-    "build": "rm -rf dist && rollup -c",
-    "tsc": "rm -rf dist && tsc"
+    "build": "rm -rf ./dist && tsc",
+    "dev": "rm -rf ./dist && tsc -w",
+    "prepare": "yarn run build"
   },
   "dependencies": {
     "chalk": "^4.1.1",
@@ -27,15 +28,9 @@
     "minimist": "^1.2.5"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^18.0.0",
-    "@rollup/plugin-json": "^4.1.0",
-    "@rollup/plugin-node-resolve": "^11.2.1",
-    "@rollup/plugin-typescript": "^8.2.1",
     "@types/cross-spawn": "^6.0.2",
     "@types/fs-extra": "^9.0.11",
     "@types/minimist": "^1.2.1",
-    "@types/node": "^14.14.41",
-    "rollup": "^2.45.2",
-    "rollup-plugin-auto-external": "^2.0.0"
+    "@types/node": "^14.14.41"
   }
 }

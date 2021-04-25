@@ -14,7 +14,8 @@ export interface SiteData {
 
 export interface Frontmatter {
   title: string
-  draft?: boolean
+  tags: string[]
+  draft: boolean
   layout?: string
   ogType?: string
   [key: string]: any

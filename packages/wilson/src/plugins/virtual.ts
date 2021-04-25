@@ -56,7 +56,7 @@ const virtualPlugin = async (): Promise<Plugin> => {
             .join(',') +
           `];` +
           `const PageContext = createContext(null);` +
-          `const PageProvider = ({ children, collection = 'all' }) => (` +
+          `const PageProvider = ({ children }) => (` +
           `  <PageContext.Provider value={${JSON.stringify(pages)}}>` +
           `    {children}` +
           `  </PageContext.Provider>` +

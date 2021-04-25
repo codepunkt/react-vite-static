@@ -34,7 +34,7 @@ const getFrontmatter = async (
   pageType: string
 ): Promise<Frontmatter> => {
   const content = await readFile(id, 'utf-8')
-  let frontmatter: Frontmatter
+  let frontmatter: Partial<Frontmatter>
 
   if (pageType === 'markdown') {
     const parsed = grayMatter(content, {})
@@ -84,7 +84,11 @@ const getFrontmatter = async (
   if (frontmatter.title === undefined)
     throw new Error(`frontmatter has no title: ${id}!`)
 
-  return frontmatter
+  return {
+    draft: false,
+    tags: [],
+    ...frontmatter,
+  } as Frontmatter
 }
 
 export const collectPageData = async (): Promise<void> => {
@@ -118,10 +122,7 @@ export const getPageData = async (id: string): Promise<Page> => {
   const pageType = getPagetype(pageTypes, extension) as Page['type']
   page = {
     type: pageType,
-    frontmatter: {
-      draft: false,
-      ...(await getFrontmatter(id, pageType)),
-    },
+    frontmatter: await getFrontmatter(id, pageType),
     source: {
       path,
       absolutePath: id,
@@ -133,6 +134,12 @@ export const getPageData = async (id: string): Promise<Page> => {
   }
 
   cache.collections.all.push(page)
+  for (let tag of page.frontmatter.tags) {
+    if (!cache.collections[tag]) {
+      cache.collections[tag] = []
+    }
+    cache.collections[tag].push(page)
+  }
 
   return page
 }

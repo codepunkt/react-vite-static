@@ -2,6 +2,7 @@ import { LayoutProps } from 'wilson'
 import { FunctionalComponent } from 'preact'
 import classes from './blog.module.scss'
 import '../assets/global.scss'
+import Menu from '../components/menu'
 
 const BlogLayout: FunctionalComponent<LayoutProps> = ({
   children,
@@ -10,6 +11,7 @@ const BlogLayout: FunctionalComponent<LayoutProps> = ({
 }) => {
   return (
     <div className={classes.container}>
+      <Menu />
       <main className={classes.main}>
         <article className={classes.markdown}>
           <h1>Table of contents</h1>

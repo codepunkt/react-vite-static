@@ -34,7 +34,7 @@
     "dev": "rm -rf ./dist && run-p \"dev-*\"",
     "dev-node": "tsc -w -p src/node",
     "dev-client": "tsc -w -p src/client",
-    "prepare": "npm run build"
+    "prepare": "yarn run build"
   },
   "dependencies": {
     "@codepunkt/wasm-layout-text": "^3.0.0",

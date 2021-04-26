@@ -16,4 +16,5 @@ jobs:
       - uses: actions/setup-node@v2.1.5
       - name: Install dependencies
         run: yarn install --frozen-lockfile
-
+      - name: Log node version
+        run: node --version

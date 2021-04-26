@@ -16,12 +16,11 @@ jobs:
       - uses: actions/setup-node@v2.1.5
       - name: Install dependencies
         run: yarn install --frozen-lockfile
-      - name: Get yarn cache directory path
+      - name: Get dependency cache directory
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
-      - name: Cache
+      - name: Cache dependencies
         uses: actions/cache@v2.1.5
-        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}

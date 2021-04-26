@@ -86,14 +86,26 @@ async function cli() {
   console.info(``)
 
   await install(root, useYarn)
+  const runCommand = useYarn ? 'yarn' : 'npm run'
 
   console.info(``)
   console.info(`Success!`)
   console.info(`Created a new Wilson site at ${chalk.green(root)}.`)
   console.info(`Inside that directory, you can run several commands`)
   console.info(``)
-  console.info(`  ${chalk.cyan(`${useYarn ? 'yarn' : 'npm'} start`)}`)
-  console.info(`    Starts the development server`)
+  console.info(`  ${chalk.cyan(`${runCommand} start`)}`)
+  console.info(`    Starts the development server.`)
+  console.info(``)
+  console.info(`  ${chalk.cyan(`${runCommand} build`)}`)
+  console.info(`    Bundles the site into static files for production.`)
+  console.info(``)
+  console.info(`  ${chalk.cyan(`${runCommand} serve`)}`)
+  console.info(`    Serves the production-ready site on localhost.`)
+  console.info(``)
+  console.info(`We suggest that you begin by typing:`)
+  console.info(``)
+  console.info(`    ${chalk.cyan('cd')} ${targetDir}`)
+  console.info(`    ${chalk.cyan(`${runCommand} start`)}`)
 }
 
 cli().catch((e) => {

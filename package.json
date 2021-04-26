@@ -6,8 +6,7 @@
   "author": "Christoph Werner <christoph@codepunkt.de>",
   "workspaces": [
     "docs",
-    "packages/wilson",
-    "packages/create-wilson-site"
+    "packages/*"
   ],
   "scripts": {
     "docs:build": "yarn workspace @wilson/docs build",

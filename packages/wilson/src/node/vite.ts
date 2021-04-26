@@ -5,6 +5,7 @@ import virtualPlugin from './plugins/virtual'
 import pagesPlugin from './plugins/pages'
 import indexHtmlPlugin from './plugins/indexHtml'
 import { join } from 'path'
+import { collectPageData } from './page'
 
 interface ViteConfigOptions {
   ssr?: boolean
@@ -30,6 +31,26 @@ export const getViteConfig = async ({
     },
     clearScreen: false,
     plugins: [
+      {
+        name: 'config-resolved-plugin',
+        enforce: 'pre',
+        configResolved({ root, plugins, logger }) {
+          // @TODO for production, this is done twice and could be cached
+          collectPageData(root)
+          // console.log('configResolved')
+        },
+        // configureServer({ watcher, moduleGraph }) {
+        //   // only executed in dev mode
+        //   console.log('configureServer')
+        // },
+        // buildStart() {
+        //   console.log('buildStart')
+        // },
+        // closeBundle() {
+        //   // only executed in prod mode
+        //   console.log('closeBundle')
+        // },
+      },
       await indexHtmlPlugin(),
       await markdownPlugin(),
       await pagesPlugin(),

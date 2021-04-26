@@ -91,8 +91,8 @@ const getFrontmatter = async (
   } as Frontmatter
 }
 
-export const collectPageData = async (): Promise<void> => {
-  const pageDir = `${process.cwd()}/src/pages`
+export const collectPageData = async (root: string): Promise<void> => {
+  const pageDir = `${root}/src/pages`
 
   for await (const { path, fullPath } of readdirp(pageDir)) {
     const extension = extname(basename(path))

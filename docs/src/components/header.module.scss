@@ -1,7 +1,7 @@
 .header {
   margin: 0 auto;
   padding: 0 1.5rem;
-  height: 5rem;
+  height: var(--header-height);
   position: fixed;
   right: 0;
   left: 0;
@@ -17,7 +17,7 @@
   align-items: center;
   border-bottom: 1px solid #e5e7eb;
   color: #111827;
-  height: 5rem;
+  height: var(--header-height);
 }
 
 .headerLink {

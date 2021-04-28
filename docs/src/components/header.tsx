@@ -17,6 +17,7 @@ const Header: FunctionalComponent<{ withLogo?: boolean }> = ({
           </a>
         )}
         <div>Search</div>
+        <a href="/pages">Pages</a>
         <div className={classes.grow} />
         <a
           className={classes.headerLink}

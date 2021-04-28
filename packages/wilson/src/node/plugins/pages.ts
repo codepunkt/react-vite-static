@@ -4,8 +4,9 @@ import { dirname, extname, relative } from 'path'
 import { toRoot, transformJsx } from '../util'
 import minimatch from 'minimatch'
 import { resolveUserConfig } from '../config'
-import { getPageData } from '../page'
+import { collectPageData, getPageData } from '../page'
 import cache from '../cache'
+import { Page } from '../../types'
 
 /**
  * Allowed file extensions for pages.
@@ -47,6 +48,20 @@ const pagesPlugin = async (): Promise<Plugin> => {
               )
             )?.layout
 
+      const inject: { pages?: Page[] } = {}
+      const hasInject =
+        page.type === 'typescript' && page.frontmatter.inject !== undefined
+      if (hasInject) {
+        const collections = page.frontmatter.inject!.pages.collections
+        const pages = []
+        for (let collection of collections) {
+          pages.push(...(cache.collections[collection] ?? []))
+        }
+        inject.pages = pages.sort((a, b) => b.date.getTime() - a.date.getTime())
+      }
+
+      const frontmatterString = JSON.stringify(page.frontmatter)
+
       const wrapper =
         `import { useMeta, useTitle } from "hoofd/preact";` +
         `import { siteData } from "wilson/virtual";` +
@@ -71,10 +86,12 @@ const pagesPlugin = async (): Promise<Plugin> => {
         }' });` +
         `  useMeta({ property: 'twitter:title', content: title });` +
         `  useTitle(title);` +
-        `  return <Layout frontmatter={${JSON.stringify(
-          page.frontmatter
-        )}} toc={${JSON.stringify(cache.markdown.toc.get(id))}}>` +
-        `    <Page />` +
+        `  return <Layout frontmatter={${frontmatterString}} toc={${JSON.stringify(
+          cache.markdown.toc.get(id)
+        )}}>` +
+        `    <Page frontmatter={${frontmatterString}} inject={${JSON.stringify(
+          inject
+        )}} />` +
         `  </Layout>;` +
         `}`
 

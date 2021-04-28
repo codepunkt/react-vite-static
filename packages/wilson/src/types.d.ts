@@ -16,10 +16,21 @@ export interface Dependencies {
   assets?: string[]
 }
 
+export interface Pagination {
+  size: number
+}
+
 export interface Frontmatter {
   title: string
   tags: string[]
   draft: boolean
+  date?: string | Date
+  inject?: {
+    pages: {
+      collections: string[]
+      pagination?: Pagination
+    }
+  }
   layout?: string
   ogType?: string
   [key: string]: any
@@ -28,6 +39,7 @@ export interface Frontmatter {
 export interface Page {
   type: 'typescript' | 'markdown'
   frontmatter: Frontmatter
+  date: Date
   source: {
     path: string
     absolutePath: string

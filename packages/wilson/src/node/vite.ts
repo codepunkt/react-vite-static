@@ -24,7 +24,6 @@ export const getViteConfig = async ({
         'hoofd/preact',
         '@prefresh/vite/utils',
         '@prefresh/vite/runtime',
-        'wilson/dist/client/main.js',
       ],
 
       exclude: ['wilson/virtual'],

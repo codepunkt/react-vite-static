@@ -7,6 +7,7 @@ import cache from '../cache'
 
 const virtualExportsPath = 'wilson/virtual'
 const clientEntryPath = '/@wilson/client.js'
+const pageExportsPath = '/@wilson/pages'
 
 /**
  * Provides virtual modules.
@@ -17,7 +18,12 @@ const virtualPlugin = async (): Promise<Plugin> => {
     enforce: 'pre',
 
     resolveId(id: string): ResolveIdResult {
-      if (id === virtualExportsPath || id === clientEntryPath) {
+      if (
+        id === virtualExportsPath ||
+        id === clientEntryPath ||
+        id === pageExportsPath ||
+        id.startsWith(`${pageExportsPath}/`)
+      ) {
         return id
       }
     },
@@ -32,6 +38,16 @@ const virtualPlugin = async (): Promise<Plugin> => {
     async load(id: string): Promise<LoadResult> {
       if (id === clientEntryPath) {
         return `import "wilson/dist/client/main.js";`
+      }
+
+      if (id === pageExportsPath) {
+        return `export default ${JSON.stringify(cache.collections)};`
+      }
+
+      if (id.startsWith(`${pageExportsPath}/`)) {
+        const collectionName = id.replace(new RegExp(`${pageExportsPath}/`), '')
+        const collection = cache.collections[collectionName]
+        return `export default ${JSON.stringify(collection ?? [])};`
       }
 
       if (id === virtualExportsPath) {

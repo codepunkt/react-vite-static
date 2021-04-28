@@ -13,8 +13,8 @@
     "docs:start": "yarn workspace @wilson/docs start",
     "docs:serve": "yarn workspace @wilson/docs serve",
     "wilson:build": "yarn workspace wilson build",
-    "wilson:start": "yarn workspace wilson build",
-    "start": "run-s wilson:start docs:start",
+    "wilson:start": "yarn workspace wilson start",
+    "start": "run-p wilson:start docs:start",
     "build": "run-s wilson:build docs:build docs:serve"
   },
   "engines": {

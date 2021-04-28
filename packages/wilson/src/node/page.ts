@@ -2,7 +2,7 @@ import { basename, extname } from 'path'
 import { pageTypes } from './plugins/pages'
 import { Frontmatter, Page } from '../types'
 import grayMatter from 'gray-matter'
-import { readFile } from 'fs-extra'
+import { readFile, stat } from 'fs-extra'
 import { transpileModule, ModuleKind, JsxEmit } from 'typescript'
 import { parse } from 'acorn'
 import { walk } from 'estree-walker'
@@ -86,6 +86,7 @@ const getFrontmatter = async (
 
   return {
     draft: false,
+    date: 'Created',
     tags: [],
     ...frontmatter,
   } as Frontmatter
@@ -99,6 +100,17 @@ export const collectPageData = async (root: string): Promise<void> => {
     if (!Object.values(pageTypes).flat().includes(extension)) continue
     await getPageData(fullPath)
   }
+}
+
+const getDate = async (
+  id: string,
+  frontmatterDate: string | Date
+): Promise<Date> => {
+  if (frontmatterDate instanceof Date) {
+    return frontmatterDate
+  }
+  const { ctime, mtime } = await stat(id)
+  return frontmatterDate === 'Created' ? ctime : mtime
 }
 
 /**
@@ -120,9 +132,12 @@ export const getPageData = async (id: string): Promise<Page> => {
 
   const extension = extname(id)
   const pageType = getPagetype(pageTypes, extension) as Page['type']
+  const frontmatter = await getFrontmatter(id, pageType)
+  const date = await getDate(id, frontmatter.date!)
   page = {
     type: pageType,
-    frontmatter: await getFrontmatter(id, pageType),
+    frontmatter,
+    date,
     source: {
       path,
       absolutePath: id,

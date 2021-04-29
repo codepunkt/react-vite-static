@@ -3,7 +3,7 @@ title: Glossary
 date: Last modified
 tags:
   - foo
-  - bar
+  - til
 ---
 
 wat

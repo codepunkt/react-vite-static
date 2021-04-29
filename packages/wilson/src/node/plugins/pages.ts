@@ -6,7 +6,7 @@ import minimatch from 'minimatch'
 import { resolveUserConfig } from '../config'
 import { collectPageData, getPageData } from '../page'
 import cache from '../cache'
-import { Page } from '../../types'
+import { ClientPage, Page } from '../../types'
 
 /**
  * Allowed file extensions for pages.
@@ -14,6 +14,19 @@ import { Page } from '../../types'
 export const pageTypes = {
   typescript: ['.tsx'],
   markdown: ['.md'],
+}
+
+/**
+ * Converts a Page object to a ClientPage object.
+ */
+const pageToClientPage = (page: Page): ClientPage => {
+  return {
+    type: page.type,
+    url: page.result.url,
+    title: page.frontmatter.title,
+    date: page.date,
+    tags: page.frontmatter.tags,
+  }
 }
 
 const isPageModule = (moduleId: string): boolean => {
@@ -48,7 +61,7 @@ const pagesPlugin = async (): Promise<Plugin> => {
               )
             )?.layout
 
-      const inject: { pages?: Page[] } = {}
+      const inject: { pages?: ClientPage[] } = {}
       const hasInject =
         page.type === 'typescript' && page.frontmatter.inject !== undefined
       if (hasInject) {
@@ -57,7 +70,9 @@ const pagesPlugin = async (): Promise<Plugin> => {
         for (let collection of collections) {
           pages.push(...(cache.collections[collection] ?? []))
         }
-        inject.pages = pages.sort((a, b) => b.date.getTime() - a.date.getTime())
+        inject.pages = pages
+          .map(pageToClientPage)
+          .sort((a, b) => b.date.getTime() - a.date.getTime())
       }
 
       const frontmatterString = JSON.stringify(page.frontmatter)
@@ -89,7 +104,7 @@ const pagesPlugin = async (): Promise<Plugin> => {
         `  return <Layout frontmatter={${frontmatterString}} toc={${JSON.stringify(
           cache.markdown.toc.get(id)
         )}}>` +
-        `    <Page frontmatter={${frontmatterString}} inject={${JSON.stringify(
+        `    <Page title="${page.frontmatter.title}" inject={${JSON.stringify(
           inject
         )}} />` +
         `  </Layout>;` +

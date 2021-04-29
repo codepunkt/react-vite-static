@@ -36,6 +36,9 @@ export interface Frontmatter {
   [key: string]: any
 }
 
+/**
+ * Page-related information, used internally.
+ */
 export interface Page {
   type: 'typescript' | 'markdown'
   frontmatter: Frontmatter
@@ -48,6 +51,18 @@ export interface Page {
     path: string
     url: string
   }
+}
+
+/**
+ * Page-related information, edited for use in the client,
+ * e.g. in page/post lists.
+ */
+export interface ClientPage {
+  type: 'typescript' | 'markdown'
+  url: string
+  title: string
+  date: Date
+  tags: string[]
 }
 
 export interface Heading {

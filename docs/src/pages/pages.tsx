@@ -3,24 +3,23 @@ import { Frontmatter } from 'wilson'
 
 export const Page: FunctionalComponent = ({
   // @ts-ignore
-  frontmatter,
+  title,
   // @ts-ignore
   inject: { pages },
 }) => {
-  console.log({ frontmatter, pages })
   return (
     <>
-      <h1>{frontmatter.title}</h1>
-      <div>{JSON.stringify(frontmatter)}</div>
+      <h1>{title}</h1>
+      <pre>{JSON.stringify(pages, null, 2)}</pre>
     </>
   )
 }
 
 export const frontmatter: Frontmatter = {
-  title: 'Inject test',
+  title: 'Blog posts',
   inject: {
     pages: {
-      collections: ['foo', 'moo'],
+      collections: ['blog', 'til'],
     },
   },
 }

@@ -4,17 +4,10 @@ import { dirname, extname, relative } from 'path'
 import { toRoot, transformJsx } from '../util'
 import minimatch from 'minimatch'
 import { resolveUserConfig } from '../config'
-import { collectPageData, getPageData } from '../page'
+import { getPageData } from '../page'
 import cache from '../cache'
 import { ClientPage, Page } from '../../types'
-
-/**
- * Allowed file extensions for pages.
- */
-export const pageTypes = {
-  typescript: ['.tsx'],
-  markdown: ['.md'],
-}
+import { pageTypes } from '../constants'
 
 /**
  * Converts a Page object to a ClientPage object.

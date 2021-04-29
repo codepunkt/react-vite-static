@@ -172,4 +172,4 @@ const parseFrontmatter = async (absolutePath: string): Promise<Frontmatter> => {
   } as Frontmatter
 }
 
-export { getPagetype, parseFrontmatter }
+export { getPagetype, parseFrontmatter, transpileTypescriptToJavascript }

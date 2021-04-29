@@ -33,7 +33,10 @@
     "start": "rm -rf ./dist && run-p \"start:*\"",
     "start:node": "tsc -w -p src/node",
     "start:client": "tsc -w -p src/client",
-    "prepack": "yarn run build"
+    "prepack": "yarn run build",
+    "test": "jest --coverage --watchAll",
+    "test:ci": "jest --coverage",
+    "coverage": "serve coverage/lcov-report"
   },
   "dependencies": {
     "@codepunkt/wasm-layout-text": "^3.0.0",
@@ -78,10 +81,14 @@
     "@types/estree": "^0.0.47",
     "@types/fs-extra": "^9.0.9",
     "@types/html-minifier-terser": "^5.1.1",
+    "@types/jest": "^26.0.23",
     "@types/minimatch": "^3.0.4",
     "@types/minimist": "^1.2.1",
     "@types/node": "^14.14.37",
     "@types/serve-handler": "^6.1.0",
+    "jest": "^26.6.3",
+    "serve": "^11.3.2",
+    "ts-jest": "^26.5.5",
     "tslib": "^2.2.0"
   }
 }

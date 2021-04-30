@@ -2,8 +2,7 @@
 title: Glossary
 date: Last modified
 tags:
-  - foo
-  - til
+  - docs
 ---
 
 wat

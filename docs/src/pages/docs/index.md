@@ -1,5 +1,7 @@
 ---
 title: Getting started
+tags:
+  - docs
 ---
 
 ## Lorem Ipsum

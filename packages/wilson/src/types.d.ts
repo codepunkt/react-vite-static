@@ -25,6 +25,7 @@ export interface Frontmatter {
   tags: string[]
   draft: boolean
   date?: string | Date
+  permalink?: string
   inject?: {
     pages: {
       collections: string[]

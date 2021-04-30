@@ -2,7 +2,6 @@ import { Plugin } from 'vite'
 import { LoadResult, ResolveIdResult } from 'rollup'
 import { toRoot, transformJsx } from '../util'
 import { resolveSiteData } from '../config'
-import { mapPagePathToUrl } from '../page'
 import cache from '../cache'
 
 const virtualExportsPath = 'wilson/virtual'
@@ -67,10 +66,7 @@ const virtualPlugin = async (): Promise<Plugin> => {
             .join('\n') +
           `const routes = [` +
           pages
-            .map(
-              (page, i) =>
-                `<Page${i} path="${mapPagePathToUrl(page.result.url)}" />`
-            )
+            .map((page, i) => `<Page${i} path="${page.result.url}" />`)
             .join(',') +
           `];` +
           `const PageContext = createContext(null);` +

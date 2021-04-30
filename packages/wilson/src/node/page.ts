@@ -37,19 +37,19 @@ export const getPageData = async (id: string): Promise<Page> => {
     return page
   }
 
+  const frontmatter = await parseFrontmatter(id)
+
   const path = id.replace(new RegExp(`^${process.cwd()}/src/pages/`), '')
-  const url = mapPagePathToUrl(path)
-  const resultPath =
-    url.split('/').pop() === 'index'
-      ? `${url.replace(/^\//, '')}.html`
-      : `${url.replace(/^\//, '')}index.html`
+  const route = getPageRoute(path, frontmatter.permalink)
+  const filePath = getStaticFilePath(route)
+
+  console.log({ route, filePath })
 
   const pageType = getPagetype(id) as Page['type'] | false
   if (pageType === false) {
     throw new Error(`Pagetype for extension ${id} not found!`)
   }
 
-  const frontmatter = await parseFrontmatter(id)
   const date = await getDate(id, frontmatter.date!)
   page = {
     type: pageType,
@@ -60,8 +60,8 @@ export const getPageData = async (id: string): Promise<Page> => {
       absolutePath: id,
     },
     result: {
-      url,
-      path: resultPath,
+      url: route,
+      path: filePath,
     },
   }
 
@@ -84,11 +84,27 @@ const pageExtension = new RegExp(
 )
 
 /**
- * Maps page path to URL
+ * Returns page route.
  */
-export const mapPagePathToUrl = (pagePath: string): string => {
+export const getPageRoute = (
+  pagePath: string,
+  permalink: string | undefined
+): string => {
+  if (permalink !== undefined) {
+    // @TODO
+    // validate permalink (does URL already exist? is URL not empty?)
+    if (!permalink.startsWith('/')) permalink = `/${permalink}`
+    if (!permalink.endsWith('/')) permalink = `${permalink}/`
+    return permalink
+  }
   return `/${pagePath
     .replace(pageExtension, '')
     .toLowerCase()
     .replace(/index$/, '')}/`.replace(/\/\/$/, '/')
+}
+
+export const getStaticFilePath = (route: string): string => {
+  return route.split('/').pop() === 'index'
+    ? `${route.replace(/^\//, '')}.html`
+    : `${route.replace(/^\//, '')}index.html`
 }

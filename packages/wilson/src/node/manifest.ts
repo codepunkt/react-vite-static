@@ -1,19 +1,6 @@
 import { extname } from 'path'
 import { Dependencies } from '../types'
-
-// @TODO: read types from updated vite version, PR #2901
-// https://github.com/vitejs/vite/pull/2901
-export type Manifest = Record<string, ManifestChunk>
-interface ManifestChunk {
-  src?: string
-  file: string
-  css?: string[]
-  assets?: string[]
-  isEntry?: boolean
-  isDynamicEntry?: boolean
-  imports?: string[]
-  dynamicImports?: string[]
-}
+import { Manifest } from 'vite'
 
 export const wrapManifest = (manifest: Manifest) => {
   const getJsDependencies = (paths: string[]): string[] => {

@@ -26,6 +26,7 @@ export interface Frontmatter {
   draft: boolean
   date?: string | Date
   permalink?: string
+  multiple?: 'tags'
   inject?: {
     pages: {
       collections: string[]
@@ -99,5 +100,5 @@ export interface UserConfig {
   siteData: SiteData
   opengraphImage?: { background: string; texts: OpengraphImageText[] }
   pageLayouts?: { layout: string; pattern?: string }[]
-  linkPreloadTest: (targetPage: Page) => boolean
+  linkPreloadTest: (route: string) => boolean
 }

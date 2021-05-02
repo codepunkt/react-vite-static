@@ -2,7 +2,7 @@ import { extname } from 'path'
 import { Frontmatter } from '../types'
 import { pageTypes as defaultPageTypes } from './constants'
 import grayMatter from 'gray-matter'
-import { readFile } from 'fs-extra'
+import { readFileSync } from 'fs-extra'
 import { transpileModule, ModuleKind, JsxEmit } from 'typescript'
 import acorn, { parse } from 'acorn'
 import { walk } from 'estree-walker'
@@ -148,8 +148,8 @@ const parseTypescriptFrontmatter = (
 /**
  *
  */
-const parseFrontmatter = async (absolutePath: string): Promise<Frontmatter> => {
-  const content = await readFile(absolutePath, 'utf-8')
+const parseFrontmatter = (absolutePath: string): Frontmatter => {
+  const content = readFileSync(absolutePath, 'utf-8')
   const pageType = getPagetype(absolutePath)
 
   let frontmatter: Partial<Frontmatter>

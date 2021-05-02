@@ -1,18 +1,15 @@
 import { Frontmatter } from 'wilson'
-import { usePages } from 'wilson/virtual'
 import { FunctionalComponent } from 'preact'
 import classes from './index.module.scss'
 import logoSrc from '../assets/wilson.svg'
 import InstallButton from '../components/install-button'
 
 export const Page: FunctionalComponent = () => {
-  const pages = usePages()
-  console.log(pages)
   return (
     <>
       <div className={classes.hero}>
         <div className={classes.logo}>
-          <img src={logoSrc} alt="wilsonjs" />
+          <img src={logoSrc} width="70" height="80" alt="Wilsonjs Logo" />
           <span>wilson</span>
         </div>
         <h1 className={classes.claim}>{frontmatter.title}.</h1>

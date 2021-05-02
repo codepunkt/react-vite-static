@@ -29,6 +29,7 @@ export async function renderToString(url: string): Promise<PrerenderResult> {
 
   // this is a hack that is required because preact-iso doesn't allow
   // passing a URL via props.
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   global.location = new URL(url, 'http://localhost/')
 
@@ -51,7 +52,7 @@ export async function renderToString(url: string): Promise<PrerenderResult> {
     }
   }
 
-  let links = new Set<string>()
+  const links = new Set<string>()
   vnodeHook = ({ type, props }: VNode<{ href?: string; target?: string }>) => {
     if (
       type === 'a' &&

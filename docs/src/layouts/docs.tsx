@@ -123,6 +123,14 @@ const DocsLayout: FunctionalComponent<LayoutProps> = ({
         </aside>
         <article className={classes.markdown}>
           <h1>{frontmatter.title}</h1>
+          <h2>Tags</h2>
+          <ul>
+            {frontmatter.tags.map((tag: string) => (
+              <li>
+                <a href={`/tag/${tag}/`}>{tag}</a>
+              </li>
+            ))}
+          </ul>
           {children}
         </article>
       </main>

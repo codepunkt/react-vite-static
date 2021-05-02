@@ -1,19 +1,14 @@
 import { Heading, Page } from '../types'
 
 interface PluginCache {
-  collections: {
-    all: Page[]
-    [tag: string]: Page[]
-  }
+  pages: Page[]
   markdown: {
     toc: Map<string, Heading[]>
   }
 }
 
 const cache: PluginCache = {
-  collections: {
-    all: [],
-  },
+  pages: [],
   markdown: {
     toc: new Map(),
   },

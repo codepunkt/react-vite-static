@@ -4,7 +4,7 @@ import { resolveUserConfig } from './config'
 import { hexToRgb, toRoot } from './util'
 import { readFile } from 'fs-extra'
 import { dirname } from 'path'
-import cache from './cache'
+import state from './state'
 
 export async function createOpengraphImages() {
   const userConfig = await resolveUserConfig()
@@ -28,7 +28,11 @@ export async function createOpengraphImages() {
     throw new Error(`opengraph background image is not ${width} x ${height}!`)
   }
 
-  for (const page of cache.collections.all) {
+  const pageFiles = state.pageSources
+    .map((pageSource) => pageSource.pageFiles)
+    .flat()
+
+  for (const pageFile of pageFiles) {
     let textLayers = await Promise.all(
       texts.map(
         async ({
@@ -74,7 +78,7 @@ export async function createOpengraphImages() {
           const buffer = wlt.render(
             new wlt.Text(
               typeof text === 'function'
-                ? text(page.frontmatter ?? undefined)
+                ? text(pageFile.frontmatter ?? undefined)
                 : text,
               fontSize,
               new wlt.RgbColor(...hexToRgb(color)),
@@ -98,7 +102,7 @@ export async function createOpengraphImages() {
     const result = composite.quality(100)
 
     await result.writeAsync(
-      toRoot(`./dist/${dirname(page.result.path)}/og-image.jpg`)
+      toRoot(`./dist/${dirname(pageFile.path)}/og-image.jpg`)
     )
   }
 }

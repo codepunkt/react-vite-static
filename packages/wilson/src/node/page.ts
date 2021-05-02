@@ -6,6 +6,10 @@ import readdirp from 'readdirp'
 import { getPagetype, parseFrontmatter } from './parse'
 import cache from './cache'
 
+export const getTags = () => [
+  ...new Set(cache.pages.map((page) => page.frontmatter.tags).flat()),
+]
+
 export const collectPageData = async (root: string): Promise<void> => {
   const pageDir = `${root}/src/pages`
 
@@ -13,6 +17,28 @@ export const collectPageData = async (root: string): Promise<void> => {
     const extension = extname(basename(path))
     if (!Object.values(pageTypes).flat().includes(extension)) continue
     await getPageData(fullPath)
+  }
+
+  const additionalPages: Page[] = []
+  for (const page of cache.pages) {
+    if (page.frontmatter.multiple === 'tags') {
+      const tagRegex = /\{\{tag\}\}/
+      const pageIndex = cache.pages.findIndex((p) => p === page)
+      cache.pages.splice(pageIndex, 1)
+      for (const tag of getTags()) {
+        const tagPage = {
+          ...page,
+          frontmatter: {
+            ...page.frontmatter,
+            permalink: page.frontmatter.permalink?.replace(tagRegex, tag),
+            title: page.frontmatter.title.replace(tagRegex, tag),
+          },
+        }
+        delete tagPage.frontmatter.multiple
+        additionalPages.push(tagPage)
+      }
+      page.frontmatter.title = `${page.frontmatter.title}WAT`
+    }
   }
 }
 
@@ -31,19 +57,17 @@ const getDate = async (
  * Collects page data based on absolute path of a page.
  * Caches data so it doesn't have to be collected twice in a run.
  */
-export const getPageData = async (id: string): Promise<Page> => {
-  let page = cache.collections.all.find((p) => p.source.absolutePath === id)
+const getPageData = async (id: string): Promise<Page> => {
+  let page = cache.pages.find((page) => page.source.absolutePath === id)
   if (page) {
     return page
   }
 
-  const frontmatter = await parseFrontmatter(id)
+  const frontmatter = parseFrontmatter(id)
 
   const path = id.replace(new RegExp(`^${process.cwd()}/src/pages/`), '')
   const route = getPageRoute(path, frontmatter.permalink)
   const filePath = getStaticFilePath(route)
-
-  console.log({ route, filePath })
 
   const pageType = getPagetype(id) as Page['type'] | false
   if (pageType === false) {
@@ -65,13 +89,7 @@ export const getPageData = async (id: string): Promise<Page> => {
     },
   }
 
-  cache.collections.all.push(page)
-  for (let tag of page.frontmatter.tags) {
-    if (!cache.collections[tag]) {
-      cache.collections[tag] = []
-    }
-    cache.collections[tag].push(page)
-  }
+  cache.pages.push(page)
 
   return page
 }

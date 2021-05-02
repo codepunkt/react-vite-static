@@ -1,10 +1,7 @@
 import { FunctionalComponent } from 'preact'
 import { Frontmatter } from 'wilson'
 
-export const Page: FunctionalComponent = ({
-  // @ts-ignore
-  title,
-}) => {
+export const Page: FunctionalComponent<{ title: string }> = ({ title }) => {
   return (
     <>
       <h1>{title}</h1>
@@ -14,6 +11,7 @@ export const Page: FunctionalComponent = ({
 }
 
 export const frontmatter: Frontmatter = {
-  title: 'Blog posts',
-  permalink: '/wat/foo/blub/',
+  multiple: 'tags',
+  title: 'Tag: {{tag}}',
+  permalink: '/tag/{{tag}}/',
 }

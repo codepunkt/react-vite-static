@@ -6,7 +6,7 @@
   "author": "Christoph Werner <christoph@codepunkt.de>",
   "scripts": {
     "start": "wilson",
-    "build": "wilson build",
+    "build": "rm -rf ./node_modules/.vite && wilson build",
     "serve": "wilson serve"
   },
   "engines": {

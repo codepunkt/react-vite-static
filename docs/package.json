@@ -16,13 +16,11 @@
   "dependencies": {
     "hoofd": "^1.2.2",
     "preact": "^10.5.13",
-    "preact-iso": "^1.1.1",
-    "wilson": "latest"
+    "preact-iso": "^1.1.1"
   },
   "devDependencies": {
     "@prefresh/vite": "^2.2.0",
     "@types/node": "^14.14.37",
-    "preact-render-to-string": "^5.1.19",
     "sass": "^1.32.8"
   }
 }

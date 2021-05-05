@@ -3,7 +3,7 @@ import { hydrate } from 'preact-iso'
 import { options, VNode } from 'preact'
 import { Dependencies } from '../types'
 
-let app = <App />
+const app = <App />
 // if (import.meta.hot) {
 //     app = something else
 // }
@@ -13,7 +13,7 @@ hydrate(app, document.body)
 
 if (process.env.NODE_ENV === 'production') {
   // @ts-ignore
-  const pathPreloads = window.__WILSON_DATA__.pathPreloads as Record<
+  const pathPreloads = (window.__WILSON_DATA__ ?? {}).pathPreloads as Record<
     string,
     Dependencies
   >

@@ -1,1 +1,9 @@
-export { Frontmatter, LayoutProps, Page, SiteData, UserConfig } from '../types'
+export {
+  Frontmatter,
+  Page,
+  SiteData,
+  SiteConfig,
+  PageProps,
+  TaxonomyPageProps,
+  TermPageProps,
+} from '../types'

@@ -1,15 +1,15 @@
 import Jimp from 'jimp'
 import wlt from '@codepunkt/wasm-layout-text'
-import { resolveUserConfig } from './config'
+import { getConfig } from './config'
 import { hexToRgb, toRoot } from './util'
 import { readFile } from 'fs-extra'
 import { dirname } from 'path'
-import cache from './cache'
+import { getPagefiles } from './state'
 
-export async function createOpengraphImages() {
-  const userConfig = await resolveUserConfig()
+export async function createOpengraphImages(): Promise<void> {
+  const config = await getConfig()
 
-  const { background, texts } = userConfig.opengraphImage ?? {
+  const { background, texts } = config.opengraphImage ?? {
     background: '#ffffff',
     texts: [],
   }
@@ -28,8 +28,8 @@ export async function createOpengraphImages() {
     throw new Error(`opengraph background image is not ${width} x ${height}!`)
   }
 
-  for (const page of cache.collections.all) {
-    let textLayers = await Promise.all(
+  for (const page of getPagefiles()) {
+    const textLayers = await Promise.all(
       texts.map(
         async ({
           text,
@@ -73,9 +73,7 @@ export async function createOpengraphImages() {
 
           const buffer = wlt.render(
             new wlt.Text(
-              typeof text === 'function'
-                ? text(page.frontmatter ?? undefined)
-                : text,
+              typeof text === 'function' ? text(page) : text,
               fontSize,
               new wlt.RgbColor(...hexToRgb(color)),
               await readFile(font)
@@ -97,8 +95,6 @@ export async function createOpengraphImages() {
     })
     const result = composite.quality(100)
 
-    await result.writeAsync(
-      toRoot(`./dist/${dirname(page.result.path)}/og-image.jpg`)
-    )
+    await result.writeAsync(toRoot(`./dist/${dirname(page.path)}/og-image.jpg`))
   }
 }

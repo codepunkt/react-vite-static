@@ -1,14 +1,21 @@
-import { Manifest, wrapManifest } from './manifest'
+import { Manifest } from 'vite'
+import { wrapManifest } from './manifest'
 import { readFile, toRoot, readJson, writeFile } from './util'
 import { minify } from 'html-minifier-terser'
 import chalk from 'chalk'
 import size from 'brotli-size'
-import { resolveUserConfig } from './config'
-import cache from './cache'
+import { getConfig } from './config'
 import { Dependencies } from '../types'
+import { getPagefiles, getPageSources } from './state'
 
+/**
+ * @todo don't add all preload links to __WILSON_DATA__
+ * instead use only those that the current page links to - this should be
+ * rather easy. what also needs to be done is to update the global
+ * object with additional preloadlinks when loading new page js.
+ */
 type PrerenderFn = (
-  url: string
+  route: string
 ) => Promise<{
   html: string
   head: {
@@ -24,6 +31,9 @@ type PrerenderFn = (
   links: Set<string>
 }>
 
+/**
+ *
+ */
 const getCompressedSize = async (code: string): Promise<string> => {
   const isLarge = (code: string): boolean => code.length / 1024 > 500
 
@@ -38,16 +48,20 @@ const getCompressedSize = async (code: string): Promise<string> => {
 const filterExistingTags = (template: string) => (path: string) =>
   !template.match(new RegExp(`(href|src)=/${path}`))
 
-export async function prerenderStaticPages() {
+/**
+ *
+ */
+export async function prerenderStaticPages(): Promise<void> {
   try {
     console.info(
       `${chalk.yellow(
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         `wilson v${require('wilson/package.json').version}`
       )} prerendering static pages...`
     )
-    const userConfig = await resolveUserConfig()
     const manifest = await readJson<Manifest>('./dist/manifest.json')
     const template = await readFile('./dist/index.html')
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { renderToString }: { renderToString: PrerenderFn } = require(toRoot(
       './.wilson/ssr/serverRender.js'
     ))
@@ -56,104 +70,112 @@ export async function prerenderStaticPages() {
     const sources: Record<string, string> = {}
     const linkDependencies: Record<string, Dependencies> = {}
 
-    for (const page of cache.collections.all) {
-      if (page.result.path.length > longestPath)
-        longestPath = page.result.path.length
-
-      const prerenderResult = await renderToString(page.result.url)
-      const wrappedManifest = wrapManifest(manifest)
-      const pageDependencies = wrappedManifest.getPageDependencies(
-        `src/pages/${page.source.path}`
-      )
-
-      prerenderResult.links.forEach((link) => {
-        const targetPage = cache.collections.all.find(
-          (page) => page.result.url === link
-        )
-        if (targetPage && !linkDependencies[link]) {
-          linkDependencies[
-            link
-          ] = wrappedManifest.getPageDependencies(
-            `src/pages/${targetPage.source.path}`,
-            { assets: false }
-          )
+    for (const [i, pageSource] of getPageSources().entries()) {
+      for (const [j, page] of pageSource.pageFiles.entries()) {
+        if (page.path.length > longestPath) {
+          longestPath = page.path.length
         }
-      })
-
-      const styleTags = pageDependencies.css.map(
-        (dependency) => `<link rel=stylesheet href=/${dependency}>`
-      )
-      const preloadTags = pageDependencies.js
-        .filter(filterExistingTags(template))
-        .map(
-          (path) =>
-            `<link rel=modulepreload as=script crossorigin href=/${path}></script>`
+        const prerenderResult = await renderToString(page.route)
+        const wrappedManifest = wrapManifest(manifest)
+        const pageDependencies = wrappedManifest.getPageDependencies(
+          `@wilson/page-source/${i}/page/${j}`
         )
-      const scriptTags = pageDependencies.js
-        .filter(filterExistingTags(template))
-        .map((path) => `<script type=module crossorigin src=/${path}></script>`)
 
-      const head = `
-        <title>${prerenderResult.head.title}</title>
-        ${prerenderResult.head.metas
+        prerenderResult.links.forEach((link) => {
+          if (!linkDependencies[link]) {
+            for (const [i, pageSource] of getPageSources().entries()) {
+              for (const [j, page] of pageSource.pageFiles.entries()) {
+                if (page.route === link) {
+                  linkDependencies[
+                    link
+                  ] = wrappedManifest.getPageDependencies(
+                    `@wilson/page-source/${i}/page/${j}`,
+                    { assets: false }
+                  )
+                }
+              }
+            }
+          }
+        })
+
+        const styleTags = pageDependencies.css.map(
+          (dependency) => `<link rel=stylesheet href=/${dependency}>`
+        )
+        const preloadTags = pageDependencies.js
+          .filter(filterExistingTags(template))
           .map(
-            ({ name, property, content }) =>
-              `<meta ${
-                name ? `name="${name}"` : `property="${property}"`
-              } content="${content}">`
+            (path) =>
+              `<link rel=modulepreload as=script crossorigin href=/${path}></script>`
           )
-          .join('')}
-      `
+        const scriptTags = pageDependencies.js
+          .filter(filterExistingTags(template))
+          .map(
+            (path) => `<script type=module crossorigin src=/${path}></script>`
+          )
 
-      const source = `${template}`
-        .replace('<!--head-->', head)
-        .replace('<!--html-->', prerenderResult.html)
-        .replace('<!--style-tags-->', styleTags.join(''))
-        .replace('<!--preload-tags-->', preloadTags.join(''))
-        .replace('<!--script-tags-->', scriptTags.join(''))
+        const head = `
+          <title>${prerenderResult.head.title}</title>
+          ${prerenderResult.head.metas
+            .map(
+              ({ name, property, content }) =>
+                `<meta ${
+                  name ? `name="${name}"` : `property="${property}"`
+                } content="${content}">`
+            )
+            .join('')}
+        `
 
-      sources[page.result.path] = source
-    }
+        const source = `${template}`
+          .replace('<!--head-->', head)
+          .replace('<!--html-->', prerenderResult.html)
+          .replace('<!--style-tags-->', styleTags.join(''))
+          .replace('<!--preload-tags-->', preloadTags.join(''))
+          .replace('<!--script-tags-->', scriptTags.join(''))
 
-    for (const page of cache.collections.all) {
-      const filteredLinkDependencies: Record<string, Dependencies> = {}
-      for (const path in linkDependencies) {
-        const targetPage = cache.collections.all.find(
-          (page) => page.result.url === path
-        )
-        if (
-          targetPage &&
-          (typeof userConfig.linkPreloadTest !== 'function' ||
-            userConfig.linkPreloadTest(targetPage))
-        ) {
-          filteredLinkDependencies[path] = linkDependencies[path]
-        }
+        sources[page.path] = source
       }
-      const source = sources[page.result.path].replace(
-        '<!--wilson-data-->',
-        `<script>window.__WILSON_DATA__ = {` +
-          `  pathPreloads:${JSON.stringify(filteredLinkDependencies)}` +
-          `};</script>`
-      )
-
-      const minifiedSource = minify(source, {
-        collapseBooleanAttributes: true,
-        collapseWhitespace: true,
-        minifyCSS: true,
-        minifyJS: true,
-        minifyURLs: true,
-        removeAttributeQuotes: true,
-        removeComments: true,
-        removeEmptyAttributes: true,
-        useShortDoctype: true,
-      })
-
-      await writeFile(toRoot(`./dist/${page.result.path}`), minifiedSource)
     }
 
-    console.info(
-      `${chalk.green('✓')} ${cache.collections.all.length} pages rendered.`
-    )
+    for (const pageSource of getPageSources()) {
+      for (const page of pageSource.pageFiles) {
+        const filteredLinkDependencies: Record<string, Dependencies> = {}
+        for (const path in linkDependencies) {
+          const targetPage = getPagefiles().find(
+            (pageFile) => pageFile.route === path
+          )
+          const config = await getConfig()
+          if (
+            targetPage &&
+            (typeof config.linkPreloadTest !== 'function' ||
+              config.linkPreloadTest(targetPage.route))
+          ) {
+            filteredLinkDependencies[path] = linkDependencies[path]
+          }
+        }
+        const source = sources[page.path].replace(
+          '<!--wilson-data-->',
+          `<script>window.__WILSON_DATA__ = {` +
+            `  pathPreloads:${JSON.stringify(filteredLinkDependencies)}` +
+            `};</script>`
+        )
+
+        const minifiedSource = minify(source, {
+          collapseBooleanAttributes: true,
+          collapseWhitespace: true,
+          minifyCSS: true,
+          minifyJS: true,
+          minifyURLs: true,
+          removeAttributeQuotes: true,
+          removeComments: true,
+          removeEmptyAttributes: true,
+          useShortDoctype: true,
+        })
+
+        await writeFile(toRoot(`./dist/${page.path}`), minifiedSource)
+      }
+    }
+
+    console.info(`${chalk.green('✓')} ${getPagefiles().length} pages rendered.`)
     for (const page of Object.keys(sources)) {
       console.info(
         `${chalk.grey(chalk.white.dim('dist/'))}${chalk.green(

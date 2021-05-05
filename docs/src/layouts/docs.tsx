@@ -1,4 +1,4 @@
-import { LayoutProps } from 'wilson'
+import { PageProps } from 'wilson'
 import { createContext, FunctionalComponent } from 'preact'
 import classes from './docs.module.scss'
 import Header from '../components/header'
@@ -10,7 +10,7 @@ import '../assets/global.scss'
 const ActiveSectionContext = createContext<string | null>(null)
 
 const Toc: FunctionalComponent<{
-  toc: LayoutProps['toc']
+  toc: PageProps['tableOfContents']
 }> = ({ toc }) => {
   const activeSection = useContext(ActiveSectionContext)
   const baseLevel = toc[0].level
@@ -44,7 +44,7 @@ const Toc: FunctionalComponent<{
 const MenuItem: FunctionalComponent<{
   href: string
   isActive?: boolean
-  toc: LayoutProps['toc']
+  toc: PageProps['tableOfContents']
   showToc?: boolean
 }> = ({ children, href, isActive = false, toc, showToc = false }) => {
   const url = useLocation().url
@@ -56,16 +56,17 @@ const MenuItem: FunctionalComponent<{
   )
 }
 
-const DocsLayout: FunctionalComponent<LayoutProps> = ({
+const DocsLayout: FunctionalComponent<PageProps> = ({
   children,
-  frontmatter,
-  toc,
+  title,
+  taxonomies,
+  tableOfContents,
 }) => {
   const [activeSection, setActiveSection] = useState<string | null>(null)
   useEffect(() => {
     const headlines = Array.from(document.querySelectorAll('main h2, main h3'))
-    let previousRatio: Record<string, number> = {}
-    let previousY: Record<string, number> = {}
+    const previousRatio: Record<string, number> = {}
+    const previousY: Record<string, number> = {}
     const handleIntersect = (entries: IntersectionObserverEntry[]): void => {
       entries.forEach(
         ({ intersectionRatio, boundingClientRect: { y }, target }) => {
@@ -100,29 +101,31 @@ const DocsLayout: FunctionalComponent<LayoutProps> = ({
           <p className={classes.headline}>Documentation</p>
           <ol className={`${classes.links} ${classes.toplevel}`}>
             <ActiveSectionContext.Provider value={activeSection}>
-              <MenuItem toc={toc} href="/docs/why/">
+              <MenuItem toc={tableOfContents} href="/docs/why/">
                 Why Wilson?
               </MenuItem>
-              <MenuItem toc={toc} href="/docs/glossary/">
+              <MenuItem toc={tableOfContents} href="/docs/glossary/">
                 Glossary
               </MenuItem>
-              <MenuItem toc={toc} href="/docs/">
+              <MenuItem toc={tableOfContents} href="/docs/">
                 Getting started
               </MenuItem>
-              <MenuItem toc={toc} href="/docs/features/">
+              <MenuItem toc={tableOfContents} href="/docs/features/">
                 Features
               </MenuItem>
-              <MenuItem toc={toc} href="/docs/deploy/">
+              <MenuItem toc={tableOfContents} href="/docs/deploy/">
                 Deploying
               </MenuItem>
-              <MenuItem toc={toc} href="/docs/comparison/">
+              <MenuItem toc={tableOfContents} href="/docs/comparison/">
                 Comparison
               </MenuItem>
             </ActiveSectionContext.Provider>
           </ol>
         </aside>
         <article className={classes.markdown}>
-          <h1>{frontmatter.title}</h1>
+          <h1>{title}</h1>
+          <h2>Taxonomies</h2>
+          <pre>{JSON.stringify(taxonomies, null, 2)}</pre>
           {children}
         </article>
       </main>

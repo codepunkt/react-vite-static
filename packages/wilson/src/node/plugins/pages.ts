@@ -1,32 +1,14 @@
 import { Plugin } from 'vite'
-import { TransformResult } from 'rollup'
-import { dirname, extname, relative } from 'path'
+import { TransformResult, LoadResult, ResolveIdResult } from 'rollup'
+import { dirname, relative } from 'path'
 import { toRoot, transformJsx } from '../util'
 import minimatch from 'minimatch'
-import { resolveUserConfig } from '../config'
-import { getPageData } from '../page'
+import { getConfig } from '../config'
 import cache from '../cache'
-import { ClientPage, Page } from '../../types'
-import { pageTypes } from '../constants'
+import PageFile from '../page-file'
+import { getPagefiles, getPageSources, getTaxonomyTerms } from '../state'
 
-/**
- * Converts a Page object to a ClientPage object.
- */
-const pageToClientPage = (page: Page): ClientPage => {
-  return {
-    type: page.type,
-    url: page.result.url,
-    title: page.frontmatter.title,
-    date: page.date,
-    tags: page.frontmatter.tags,
-  }
-}
-
-const isPageModule = (moduleId: string): boolean => {
-  if (!Object.values(pageTypes).flat().includes(extname(moduleId))) return false
-  if (!moduleId.startsWith(toRoot('./src/pages/'))) return false
-  return true
-}
+const virtualPageRegex = /^@wilson\/page-source\/(\d+)\/page\/(\d+)/
 
 /**
  * Wrap pages into wrapper components for <head> meta etc.
@@ -36,77 +18,174 @@ const pagesPlugin = async (): Promise<Plugin> => {
     name: 'wilson-plugin-pages',
     enforce: 'pre',
 
+    resolveId(id: string): ResolveIdResult {
+      const match = id.match(virtualPageRegex)
+      if (match === null) return
+      return id
+    },
+
+    /**
+     * @todo is this required?
+     */
+    load(id: string): LoadResult {
+      const match = id.match(virtualPageRegex)
+      if (match === null) return
+      return 'wat'
+    },
+
     async transform(code: string, id: string): Promise<TransformResult> {
-      const extension = extname(id)
+      const match = id.match(virtualPageRegex)
+      if (match === null) return
 
-      if (!isPageModule(id)) return
+      const pageSourceIndex = parseInt(match[1], 10)
+      const pageSource = getPageSources()[pageSourceIndex]
+      const pageIndex = parseInt(match[2], 10)
+      const page = pageSource.pageFiles[pageIndex]
 
-      const page = await getPageData(id)
+      if (page === undefined) {
+        throw new Error('kaput!')
+      }
 
-      const { pageLayouts } = await resolveUserConfig()
+      const { pageLayouts } = await getConfig()
       const pageLayout =
-        page.frontmatter.layout ?? typeof pageLayouts === 'undefined'
+        pageSource.frontmatter.layout ?? typeof pageLayouts === 'undefined'
           ? undefined
           : pageLayouts.find(({ pattern = '**' }) =>
               minimatch(
-                id.replace(new RegExp(`^${process.cwd()}\/src\/pages\/`), ''),
+                pageSource.fullPath.replace(
+                  new RegExp(`^${process.cwd()}/src/pages/`),
+                  ''
+                ),
                 pattern
               )
             )?.layout
 
-      const inject: { pages?: ClientPage[] } = {}
-      const hasInject =
-        page.type === 'typescript' && page.frontmatter.inject !== undefined
-      if (hasInject) {
-        const collections = page.frontmatter.inject!.pages.collections
-        const pages = []
-        for (let collection of collections) {
-          pages.push(...(cache.collections[collection] ?? []))
+      /**
+       * TaxonomyPages are given as props to kind = 'taxonomy' pages.
+       *
+       * The taxonomy is defined by the page's frontmatter.taxonomyName.
+       *
+       * If frontmatter.taxonomyTerms is defined, taxonomyPages is a
+       * list of every page that matches one or more terms of the defined
+       * taxonomy.
+       *
+       * If frontmatter.taxonomyTerms is not defined, a page is created for
+       * every existing term of the taxonomy and taxonomyPages is a list of
+       * every page that matches the specific term.
+       */
+      const taxonomyPages: PageFile[] = []
+      if (pageSource.frontmatter.kind === 'taxonomy') {
+        // eslint-disable-next-line
+        const taxonomyName = pageSource.frontmatter.taxonomyName!
+
+        const hasCommonElements = (arr1: string[], arr2: string[]): boolean => {
+          return arr1.some((item) => arr2.includes(item))
         }
-        inject.pages = pages
-          .map(pageToClientPage)
-          .sort((a, b) => b.date.getTime() - a.date.getTime())
+
+        const taxonomyTerms = pageSource.frontmatter.taxonomyTerms
+        if (taxonomyTerms !== undefined) {
+          taxonomyPages.push(
+            ...getPagefiles().filter((p) => {
+              const pageIds = taxonomyPages.map((p) => p.id)
+              return (
+                !pageIds.includes(p.id) &&
+                hasCommonElements(
+                  taxonomyTerms,
+                  p.taxonomies?.[taxonomyName] ?? []
+                )
+              )
+            })
+          )
+        } else {
+          taxonomyPages.push(
+            ...getPagefiles().filter((p) => {
+              const pageIds = taxonomyPages.map((p) => p.id)
+              return (
+                page.taxonomyReplace &&
+                !pageIds.includes(p.id) &&
+                p.taxonomies?.[taxonomyName]?.includes(
+                  page.taxonomyReplace.value
+                )
+              )
+            })
+          )
+        }
       }
 
-      const frontmatterString = JSON.stringify(page.frontmatter)
+      let taxonomyTerms: Set<string> = new Set()
+      if (pageSource.frontmatter.kind === 'term') {
+        // eslint-disable-next-line
+        const taxonomyName = pageSource.frontmatter.taxonomyName!
 
-      const wrapper =
-        `import { useMeta, useTitle } from "hoofd/preact";` +
-        `import { siteData } from "wilson/virtual";` +
-        `${
-          pageLayout
-            ? `import Layout from '${relative(
-                dirname(id),
-                toRoot(`./src/layouts/${pageLayout}`)
-              )}'`
-            : `import { Fragment as Layout } from 'preact'`
-        };` +
-        `${code}` +
-        `export default function PageWrapper() {` +
-        `  const pageUrl = siteData.siteUrl + '${page.result.url}';` +
-        `  const title = '${page.frontmatter.title}';` +
-        `  useMeta({ property: 'og:url', content: pageUrl });` +
-        `  useMeta({ property: 'og:image', content: pageUrl + 'og-image.jpg' });` +
-        `  useMeta({ property: 'og:image:secure_url', content: pageUrl + 'og-image.jpg' });` +
-        `  useMeta({ property: 'og:title', content: title });` +
-        `  useMeta({ property: 'og:type', content: '${
-          page.frontmatter.ogType ?? 'website'
-        }' });` +
-        `  useMeta({ property: 'twitter:title', content: title });` +
-        `  useTitle(title);` +
-        `  return <Layout frontmatter={${frontmatterString}} toc={${JSON.stringify(
-          cache.markdown.toc.get(id)
-        )}}>` +
-        `    <Page title="${page.frontmatter.title}" inject={${JSON.stringify(
-          inject
-        )}} />` +
-        `  </Layout>;` +
-        `}`
+        taxonomyTerms = new Set([
+          ...getPagefiles()
+            .map((page) => {
+              if (page.taxonomies === null) return []
+              return page.taxonomies[taxonomyName] ?? []
+            })
+            .flat(),
+        ])
+      }
+
+      const layoutImport = pageLayout
+        ? `import Layout from '${relative(
+            dirname(id),
+            toRoot(`./src/layouts/${pageLayout}`)
+          )}';`
+        : `import { Fragment as Layout } from 'preact';`
+
+      const componentProps = `
+        title="${page.title}"
+        date={${+page.date}}
+        taxonomies={${JSON.stringify(page.taxonomies)}}
+        tableOfContents={${JSON.stringify(
+          cache.markdown.toc.get(pageSource.fullPath)
+        )}}
+      `
+
+      const wrapper = `
+        import { h } from 'preact';
+        import { useMeta, useTitle } from 'hoofd/preact';
+        import { siteData } from 'wilson/virtual';
+        import { Page } from '${pageSource.fullPath}';
+        ${layoutImport}
+
+        export default function PageWrapper() {
+          const pageUrl = siteData.siteUrl + '${page.route}';
+          const title = '${page.title}';
+
+          useMeta({ property: 'og:url', content: pageUrl });
+          useMeta({ property: 'og:image', content: pageUrl + 'og-image.jpg' });
+          useMeta({ property: 'og:image:secure_url', content: pageUrl + 'og-image.jpg' });
+          useMeta({ property: 'og:title', content: title });
+          useMeta({ property: 'og:type', content: '${
+            pageSource.frontmatter.opengraphType
+          }' });
+          useMeta({ property: 'twitter:title', content: title });
+          useTitle(title);
+
+          return <Layout ${componentProps}>
+            <Page
+              ${componentProps}
+              ${
+                pageSource.frontmatter.kind === 'taxonomy'
+                  ? `taxonomyPages={${JSON.stringify(taxonomyPages)}}`
+                  : ''
+              }
+              ${
+                pageSource.frontmatter.kind === 'term'
+                  ? `taxonomyTerms={${JSON.stringify(
+                      Array.from(taxonomyTerms)
+                    )}}`
+                  : ''
+              }
+            />
+          </Layout>;
+        }
+      `
 
       return {
-        // jsx is automatically transformed for typescript,
-        // we need to do it manually for markdown pages.
-        code: extension === '.md' ? transformJsx(wrapper) : wrapper,
+        code: transformJsx(wrapper),
       }
     },
   }

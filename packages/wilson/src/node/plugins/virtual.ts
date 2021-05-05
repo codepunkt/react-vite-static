@@ -1,12 +1,13 @@
 import { Plugin } from 'vite'
 import { LoadResult, ResolveIdResult } from 'rollup'
-import { toRoot, transformJsx } from '../util'
-import { resolveSiteData } from '../config'
-import cache from '../cache'
+import { transformJsx } from '../util'
+import { getConfig } from '../config'
+import { getPagefiles, getPageSources } from '../state'
 
 const virtualExportsPath = 'wilson/virtual'
 const clientEntryPath = '/@wilson/client.js'
-const pageExportsPath = '/@wilson/pages'
+const pageEntryPath = (pageSourceIndex: number, pageIndex: number) =>
+  `@wilson/page-source/${pageSourceIndex}/page/${pageIndex}`
 
 /**
  * Provides virtual modules.
@@ -17,67 +18,64 @@ const virtualPlugin = async (): Promise<Plugin> => {
     enforce: 'pre',
 
     resolveId(id: string): ResolveIdResult {
-      if (
-        id === virtualExportsPath ||
-        id === clientEntryPath ||
-        id === pageExportsPath ||
-        id.startsWith(`${pageExportsPath}/`)
-      ) {
+      if (id === virtualExportsPath || id === clientEntryPath) {
         return id
       }
     },
 
     /**
      * Provide virtual module content.
-     *
-     * @TODO
-     * export VirtualPage instead of Page, because Page has too much
-     * information density that would increase clientside bundlesize on import
      */
     async load(id: string): Promise<LoadResult> {
       if (id === clientEntryPath) {
         return `import "wilson/dist/client/main.js";`
       }
 
-      if (id === pageExportsPath) {
-        return `export default ${JSON.stringify(cache.collections)};`
-      }
-
-      if (id.startsWith(`${pageExportsPath}/`)) {
-        const collectionName = id.replace(new RegExp(`${pageExportsPath}/`), '')
-        const collection = cache.collections[collectionName]
-        return `export default ${JSON.stringify(collection ?? [])};`
-      }
-
       if (id === virtualExportsPath) {
-        const pages = cache.collections.all
+        const pageSources = getPageSources()
+        const pageFiles = getPagefiles()
 
-        const code =
-          `import { createContext, h } from 'preact';` +
-          `import { useContext } from 'preact/hooks';` +
-          `import { lazy } from 'preact-iso';` +
-          pages
-            .map(
-              (page, i) =>
-                `const Page${i} = lazy(() => import('${toRoot(
-                  `/src/pages/${page.source.path}`
-                )}'));`
+        const lazyPageImports = pageSources
+          .map((pageSource, i) =>
+            pageSource.pageFiles.map((pageFile, j) => {
+              return `const PageSource${i}Page${j} = lazy(() => import('${pageEntryPath(
+                i,
+                j
+              )}'));`
+            })
+          )
+          .flat()
+          .join('\n')
+
+        const routes = pageSources
+          .map((pageSource, i) =>
+            pageSource.pageFiles.map(
+              (pageFile, j) =>
+                `<PageSource${i}Page${j} path="${pageFile.route}" />`
             )
-            .join('\n') +
-          `const routes = [` +
-          pages
-            .map((page, i) => `<Page${i} path="${page.result.url}" />`)
-            .join(',') +
-          `];` +
-          `const PageContext = createContext(null);` +
-          `const PageProvider = ({ children }) => (` +
-          `  <PageContext.Provider value={${JSON.stringify(pages)}}>` +
-          `    {children}` +
-          `  </PageContext.Provider>` +
-          `);` +
-          `const usePages = () => useContext(PageContext);` +
-          `const siteData = ${JSON.stringify(await resolveSiteData())};` +
-          `export { routes, siteData, PageProvider, usePages };`
+          )
+          .flat()
+          .join(',')
+
+        const code = `
+          import { createContext, h } from 'preact';
+          import { useContext } from 'preact/hooks';
+          import { lazy } from 'preact-iso';
+
+          ${lazyPageImports}
+          const routes = [${routes}];
+          const PageContext = createContext(null);
+          const PageProvider = ({ children }) => (
+            <PageContext.Provider value={${JSON.stringify(pageFiles)}}>
+              {children}
+            </PageContext.Provider>
+          );
+          const usePages = () => useContext(PageContext);
+          const siteData = ${JSON.stringify((await getConfig()).siteData)};
+          
+          export { routes, siteData, PageProvider, usePages };
+        `
+
         return transformJsx(code)
       }
     },

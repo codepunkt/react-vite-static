@@ -1,6 +1,7 @@
 import { dirname, join } from 'path'
 import { readFile as fsRead, writeFile as write, ensureDir } from 'fs-extra'
 import { transform } from 'sucrase'
+import slugify from 'slugify'
 
 /**
  * Checks if two arrays have one or more common elements.
@@ -64,4 +65,13 @@ export const transformJsx = (code: string): string => {
     jsxPragma: 'h',
     jsxFragmentPragma: 'Fragment',
   }).code
+}
+
+/**
+ * Slugifies a string.
+ */
+export const toSlug = (input: string): string => {
+  return slugify(input, {
+    lower: true,
+  })
 }

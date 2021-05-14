@@ -222,6 +222,11 @@ export type TaxonomyPageProps = SelectPageProps & {
   selectedTerm: string
 }
 
+export interface TaxonomyTerm {
+  name: string
+  slug: string
+}
+
 export type TermPageProps = PageProps & {
-  taxonomyTerms: string[]
+  taxonomyTerms: TaxonomyTerm[]
 }

@@ -9,9 +9,9 @@ export const Page: FunctionalComponent<TermPageProps> = ({
     <>
       <h1>{title}</h1>
       <ul>
-        {taxonomyTerms.map((term) => (
-          <li key={term}>
-            <a href={`/tags/${term}/`}>{term}</a>
+        {taxonomyTerms.map(({ name, slug }) => (
+          <li key={name}>
+            <a href={`/tags/${slug}/`}>{name}</a>
           </li>
         ))}
       </ul>

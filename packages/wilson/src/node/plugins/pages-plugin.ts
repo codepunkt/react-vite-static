@@ -120,7 +120,7 @@ const pagesPlugin = async (): Promise<Plugin> => {
               }
               ${
                 page instanceof TermsPage
-                  ? `taxonomyTerms={${JSON.stringify(page.getTaxonomyTerms())}}`
+                  ? `taxonomyTerms={${JSON.stringify(page.taxonomyTerms)}}`
                   : ''
               }
             />

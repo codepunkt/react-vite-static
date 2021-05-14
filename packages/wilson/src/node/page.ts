@@ -6,6 +6,7 @@ import {
   Page as PageInterface,
   PaginationRoutes,
   TaxonomyData,
+  TaxonomyTerm,
 } from '../types'
 import { getConfig } from './config'
 import {
@@ -15,7 +16,8 @@ import {
   TaxonomyPageSource,
   TermsPageSource,
 } from './page-source'
-import { getContentPages } from './state'
+import { getTaxonomyTerms } from './state'
+import { toSlug } from './util'
 
 const getPaginationRoutes = (
   baseRoute: string,
@@ -147,32 +149,25 @@ export class TaxonomyPage extends Page {
     this.route = currentPage
     this.paginationRoutes = { previousPage, nextPage }
     this.path = this.getPath()
-    this.title = this.getTitle(source.frontmatter.title)
+    this.title = this.replacePlaceholder(source.frontmatter.title)
   }
 
-  /**
-   * @todo slugify terms.
-   */
   protected getRoutes(
     relativePath: string,
     permalink?: string
   ): PaginationRoutes & { currentPage: string } {
-    const placeholder = getConfig().taxonomies[this.taxonomyName]
-    const baseRoute = Page.getRoute(relativePath, permalink).replace(
-      new RegExp(`{{${placeholder}}}`),
-      this.selectedTerm
+    const baseRoute = this.replacePlaceholder(
+      Page.getRoute(relativePath, permalink),
+      true
     )
     return getPaginationRoutes(baseRoute, this.pagination)
   }
 
-  /**
-   * @todo slugify terms.
-   */
-  private getTitle(frontmatterTitle: string): string {
+  private replacePlaceholder(input: string, slugify = false): string {
     const placeholder = getConfig().taxonomies[this.taxonomyName]
-    return frontmatterTitle.replace(
+    return input.replace(
       new RegExp(`{{${placeholder}}}`),
-      this.selectedTerm
+      slugify ? toSlug(this.selectedTerm) : this.selectedTerm
     )
   }
 }
@@ -185,25 +180,18 @@ export class TermsPage extends Page {
   public path: string
   public title: string
   public taxonomyName: string
+  public taxonomyTerms: TaxonomyTerm[]
 
   constructor(source: TermsPageSource) {
     super(source)
     this.taxonomyName = source.frontmatter.taxonomyName
+    this.taxonomyTerms = getTaxonomyTerms(this.taxonomyName).map((name) => ({
+      name,
+      slug: toSlug(name),
+    }))
     this.route = Page.getRoute(source.path, source.frontmatter.permalink)
     this.path = this.getPath()
     this.title = source.frontmatter.title
-  }
-
-  public getTaxonomyTerms(): string[] {
-    return Array.from(
-      new Set([
-        ...getContentPages()
-          .map(
-            (contentPage) => contentPage.taxonomies?.[this.taxonomyName] ?? []
-          )
-          .flat(),
-      ])
-    )
   }
 }
 

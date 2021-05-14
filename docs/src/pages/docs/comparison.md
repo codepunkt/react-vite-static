@@ -3,7 +3,7 @@ title: Comparison
 taxonomies:
   tags:
     - docs
-    - har
+    - Wat the Eff?
   categories:
     - writing
 ---

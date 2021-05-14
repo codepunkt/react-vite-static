@@ -174,18 +174,15 @@ export class TaxonomyPageSource extends PageSource {
         )
         // sort by page date, descending
         .sort((a, b) => +b.date - +a.date)
-      /**
-       * @todo size should have a default value prior to this
-       * code being executed
-       */
-      const pageSize = config.pagination.size ?? 2
+
+      const pageSize = config.pagination.size
       let currentPage = 1
       for (let i = 0, j = pages.length; i < j; i += pageSize) {
         this.pages.push(
           new TaxonomyPage(this, term, pages.slice(i, i + pageSize), {
+            count: pages.length,
             currentPage,
-            hasPreviousPage: currentPage > 1,
-            hasNextPage: pages.length > currentPage * pageSize,
+            pageSize,
           })
         )
         currentPage++
@@ -233,9 +230,9 @@ export class SelectPageSource extends PageSource {
     for (let i = 0, j = pages.length; i < j; i += pageSize) {
       this.pages.push(
         new SelectPage(this, pages.slice(i, i + pageSize), {
+          count: pages.length,
           currentPage,
-          hasPreviousPage: currentPage > 1,
-          hasNextPage: pages.length > currentPage * pageSize,
+          pageSize,
         })
       )
       currentPage++

@@ -106,8 +106,11 @@ const pagesPlugin = async (): Promise<Plugin> => {
               ${componentProps}
               ${
                 page instanceof TaxonomyPage || page instanceof SelectPage
-                  ? `taxonomyPages={${JSON.stringify(page.contentPages)}}
-                     paginationInfo={${JSON.stringify(page.paginationInfo)}}`
+                  ? `contentPages={${JSON.stringify(page.contentPages)}}
+                     pagination={${JSON.stringify({
+                       ...page.pagination,
+                       ...page.paginationRoutes,
+                     })}}`
                   : ''
               }
               ${

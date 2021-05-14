@@ -2,39 +2,24 @@ import { FunctionalComponent } from 'preact'
 import { TaxonomyPageProps, Frontmatter } from 'wilson'
 
 export const Page: FunctionalComponent<TaxonomyPageProps> = ({
-  paginationInfo,
-  selectedTerm,
+  pagination,
   title,
-  taxonomyPages,
+  contentPages,
 }) => {
   return (
     <>
       <h1>{title}</h1>
       <ul>
-        {taxonomyPages.map((page) => (
+        {contentPages.map((page) => (
           <li key={page.title}>
             <a href={page.route}>{page.title}</a>
           </li>
         ))}
       </ul>
-      {paginationInfo.hasPreviousPage && (
-        <a
-          href={
-            paginationInfo.currentPage === 2
-              ? `/tags/${selectedTerm}/`
-              : `/tags/${selectedTerm}/page-${paginationInfo.currentPage - 1}/`
-          }
-        >
-          &lt; Previous
-        </a>
+      {pagination.previousPage && (
+        <a href={pagination.previousPage}>&lt; Previous</a>
       )}
-      {paginationInfo.hasNextPage && (
-        <a
-          href={`/tags/${selectedTerm}/page-${paginationInfo.currentPage + 1}/`}
-        >
-          Next &gt;
-        </a>
-      )}
+      {pagination.nextPage && <a href={pagination.nextPage}>Next &gt;</a>}
     </>
   )
 }

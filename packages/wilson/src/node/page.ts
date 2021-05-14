@@ -1,7 +1,12 @@
 import { grey, green } from 'chalk'
 import { statSync } from 'fs-extra'
 import { extname } from 'path'
-import { Page as PageInterface, PaginationInfo, TaxonomyData } from '../types'
+import {
+  BasePagination,
+  Page as PageInterface,
+  PaginationRoutes,
+  TaxonomyData,
+} from '../types'
 import { getConfig } from './config'
 import {
   ContentPageSource,
@@ -11,6 +16,29 @@ import {
   TermsPageSource,
 } from './page-source'
 import { getContentPages } from './state'
+
+const getPaginationRoutes = (
+  baseRoute: string,
+  pagination: BasePagination
+): PaginationRoutes & { currentPage: string } => {
+  const { count, currentPage, pageSize } = pagination
+  const routeSuffix = getConfig().pagination.routeSuffix
+
+  return {
+    currentPage:
+      currentPage > 1 ? `${baseRoute}${routeSuffix(currentPage)}` : baseRoute,
+    previousPage:
+      currentPage > 1
+        ? currentPage > 2
+          ? `${baseRoute}${routeSuffix(currentPage - 1)}`
+          : baseRoute
+        : false,
+    nextPage:
+      count > currentPage * pageSize
+        ? `${baseRoute}${routeSuffix(currentPage + 1)}`
+        : false,
+  }
+}
 
 abstract class Page implements PageInterface {
   public abstract route: string
@@ -51,7 +79,6 @@ abstract class Page implements PageInterface {
     return dateObj
   }
 
-  protected abstract getRoute(relativePath: string, permalink?: string): string
   /**
    * @todo validate permalink: does URL already exist? is URL not empty?
    */
@@ -75,54 +102,69 @@ abstract class Page implements PageInterface {
   }
 }
 
+/**
+ * Page created from a `content` source.
+ */
 export class ContentPage extends Page {
   public route: string
   public path: string
   public title: string
   public taxonomies?: TaxonomyData
   public draft: boolean
+
   constructor(source: ContentPageSource) {
     super(source)
     this.taxonomies = source.frontmatter.taxonomies
     this.draft = source.frontmatter.draft
-    this.route = this.getRoute(source.path, source.frontmatter.permalink)
+    this.route = Page.getRoute(source.path, source.frontmatter.permalink)
     this.path = this.getPath()
     this.title = source.frontmatter.title
   }
-  protected getRoute(relativePath: string, permalink?: string): string {
-    return Page.getRoute(relativePath, permalink)
-  }
 }
 
+/**
+ * Page created from a `taxonomy` source.
+ */
 export class TaxonomyPage extends Page {
   public route: string
   public path: string
   public title: string
   public taxonomyName: string
+  public paginationRoutes: PaginationRoutes
+
   constructor(
     source: TaxonomyPageSource,
     public selectedTerm: string,
     public contentPages: ContentPage[],
-    public paginationInfo: PaginationInfo
+    public pagination: BasePagination
   ) {
     super(source)
     this.taxonomyName = source.frontmatter.taxonomyName
-    this.route = this.getRoute(source.path, source.frontmatter.permalink)
+    const { currentPage, previousPage, nextPage } = this.getRoutes(
+      source.path,
+      source.frontmatter.permalink
+    )
+    this.route = currentPage
+    this.paginationRoutes = { previousPage, nextPage }
     this.path = this.getPath()
     this.title = this.getTitle(source.frontmatter.title)
   }
+
   /**
    * @todo slugify terms.
    */
-  protected getRoute(relativePath: string, permalink?: string): string {
+  protected getRoutes(
+    relativePath: string,
+    permalink?: string
+  ): PaginationRoutes & { currentPage: string } {
     const placeholder = getConfig().taxonomies[this.taxonomyName]
-    let route = Page.getRoute(relativePath, permalink)
-    route = route.replace(new RegExp(`{{${placeholder}}}`), this.selectedTerm)
-    if (this.paginationInfo.currentPage > 1) {
-      route = `${route}page-${this.paginationInfo.currentPage}/`
-    }
-    return route
+    const baseRoute = Page.getRoute(relativePath, permalink).replace(
+      new RegExp(`{{${placeholder}}}`),
+      this.selectedTerm
+    )
+    return getPaginationRoutes(baseRoute, this.pagination)
   }
+
   /**
    * @todo slugify terms.
    */
@@ -135,21 +177,23 @@ export class TaxonomyPage extends Page {
   }
 }
 
+/**
+ * Page created from a `terms` source.
+ */
 export class TermsPage extends Page {
   public route: string
   public path: string
   public title: string
   public taxonomyName: string
+
   constructor(source: TermsPageSource) {
     super(source)
     this.taxonomyName = source.frontmatter.taxonomyName
-    this.route = this.getRoute(source.path, source.frontmatter.permalink)
+    this.route = Page.getRoute(source.path, source.frontmatter.permalink)
     this.path = this.getPath()
     this.title = source.frontmatter.title
   }
-  protected getRoute(relativePath: string, permalink?: string): string {
-    return Page.getRoute(relativePath, permalink)
-  }
+
   public getTaxonomyTerms(): string[] {
     return Array.from(
       new Set([
@@ -163,30 +207,41 @@ export class TermsPage extends Page {
   }
 }
 
+/**
+ * Page created from a `select` source.
+ */
 export class SelectPage extends Page {
   public route: string
   public path: string
   public title: string
   public taxonomyName: string
   public selectedTerms: string[]
+  public paginationRoutes: PaginationRoutes
+
   constructor(
     source: SelectPageSource,
     public contentPages: ContentPage[],
-    public paginationInfo: PaginationInfo
+    public pagination: BasePagination
   ) {
     super(source)
     this.taxonomyName = source.frontmatter.taxonomyName
     this.selectedTerms = source.frontmatter.selectedTerms
-    this.route = this.getRoute(source.path, source.frontmatter.permalink)
+    const { currentPage, previousPage, nextPage } = this.getRoutes(
+      source.path,
+      source.frontmatter.permalink
+    )
+    this.route = currentPage
+    this.paginationRoutes = { previousPage, nextPage }
     this.path = this.getPath()
     this.title = source.frontmatter.title
   }
-  protected getRoute(relativePath: string, permalink?: string): string {
-    let route = Page.getRoute(relativePath, permalink)
-    if (this.paginationInfo.currentPage > 1) {
-      route = `${route}page-${this.paginationInfo.currentPage}/`
-    }
-    return route
+
+  protected getRoutes(
+    relativePath: string,
+    permalink?: string
+  ): PaginationRoutes & { currentPage: string } {
+    const baseRoute = Page.getRoute(relativePath, permalink)
+    return getPaginationRoutes(baseRoute, this.pagination)
   }
 }
 

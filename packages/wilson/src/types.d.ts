@@ -170,8 +170,8 @@ interface SiteConfigOptional {
  * Optional site configuration that is set to default values when not defined.
  */
 export type SiteConfigDefaults = Required<
-  Pick<SiteConfigOptional, 'pageLayouts' | 'taxonomies' | 'pagination'>
->
+  Pick<SiteConfigOptional, 'pageLayouts' | 'taxonomies'>
+> & { pagination: Required<PaginationOptions> }
 
 /**
  * Site configuration.
@@ -195,11 +195,18 @@ interface PageProps {
   date: number // timestamp
 }
 
-export interface PaginationInfo {
+export interface BasePagination {
+  count: number
   currentPage: number
-  hasPreviousPage: boolean
-  hasNextPage: boolean
+  pageSize: number
 }
+
+export interface PaginationRoutes {
+  previousPage: string | false
+  nextPage: string | false
+}
+
+export type ClientPagination = BasePagination & PaginationRoutes
 
 export type ContentPageProps = PageProps & {
   tableOfContents: Heading[]
@@ -207,8 +214,8 @@ export type ContentPageProps = PageProps & {
 }
 
 export type SelectPageProps = PageProps & {
-  taxonomyPages: Page[]
-  paginationInfo: PaginationInfo
+  contentPages: Page[]
+  pagination: ClientPagination
 }
 
 export type TaxonomyPageProps = SelectPageProps & {

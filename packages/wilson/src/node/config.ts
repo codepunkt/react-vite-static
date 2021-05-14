@@ -4,10 +4,15 @@ import {
   SiteConfigWithDefaults,
 } from '../types'
 import { resolve } from 'path'
-import { pathExists } from 'fs-extra'
+import { pathExistsSync } from 'fs-extra'
 
 const configDefaults: SiteConfigDefaults = {
   pageLayouts: [{ pattern: '**/*.md', layout: 'markdown' }],
+  pagination: {
+    size: 10,
+    routeSuffix: (pageNumber: number): string =>
+      pageNumber === 0 ? '' : `/page/${pageNumber}`,
+  },
   taxonomies: {
     categories: 'category',
     tags: 'tag',
@@ -27,9 +32,9 @@ let cachedConfig: SiteConfigWithDefaults | null = null
 /**
  * Returns user's site configuration, combined with default values.
  */
-export async function getConfig(
+export function getConfig(
   root: string = process.cwd()
-): Promise<SiteConfigWithDefaults> {
+): SiteConfigWithDefaults {
   // If configuration data is cached in production, return from cache.
   if (process.env.NODE_ENV === 'production' && cachedConfig !== null) {
     return cachedConfig
@@ -37,7 +42,7 @@ export async function getConfig(
 
   // Check config file existance.
   const configPath = resolve(root, configFileName)
-  const hasConfig = await pathExists(configPath)
+  const hasConfig = pathExistsSync(configPath)
   if (!hasConfig) {
     throw new Error(`no ${configFileName} found.`)
   }
@@ -48,6 +53,10 @@ export async function getConfig(
   const config: SiteConfig = require(configPath)
 
   // Cache and return configuration data.
-  cachedConfig = { ...configDefaults, ...config }
+  cachedConfig = {
+    ...configDefaults,
+    ...config,
+    pagination: { ...configDefaults.pagination, ...config.pagination },
+  }
   return cachedConfig
 }

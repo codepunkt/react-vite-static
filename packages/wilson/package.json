@@ -23,10 +23,12 @@
     "url": "https://github.com/codepunkt/wilson/issues"
   },
   "scripts": {
-    "build": "rm -rf ./dist && run-p \"build:*\" && cp ./src/types.d.ts ./dist/types.d.ts",
+    "build": "yarn run clean && run-p \"build:*\" && yarn run copy:types",
     "build:node": "tsc -p src/node",
     "build:client": "tsc -p src/client",
-    "start": "rm -rf ./dist && run-p \"start:*\"",
+    "clean": "node -e \"fs.rmSync('dist', { force: true, recursive: true })\"",
+    "copy:types": "node -e \"fs.copyFileSync(path.join('src', 'types.d.ts'), path.join('dist', 'types.d.ts'))\"",
+    "start": "yarn run clean && run-p \"start:*\"",
     "start:node": "tsc -w -p src/node",
     "start:client": "tsc -w -p src/client",
     "prepack": "yarn run build",

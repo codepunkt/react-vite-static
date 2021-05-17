@@ -14,8 +14,9 @@
     "template/**"
   ],
   "scripts": {
-    "build": "rm -rf ./dist && tsc",
-    "dev": "rm -rf ./dist && tsc -w",
+    "build": "yarn run clean && tsc",
+    "dev": "yarn run clean && tsc -w",
+    "clean": "node -e \"fs.rmSync('dist', { force: true, recursive: true })\"",
     "prepack": "yarn run build"
   },
   "dependencies": {

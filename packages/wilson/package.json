@@ -75,7 +75,7 @@
     "unified": "^9.2.1",
     "unist-util-is": "^4.1.0",
     "unist-util-visit": "^2.0.3",
-    "vite": "^2.2.2"
+    "vite": "2.3.2"
   },
   "devDependencies": {
     "@types/compression": "^1.7.0",

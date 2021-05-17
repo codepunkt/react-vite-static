@@ -25,7 +25,11 @@ const state: State = {
  *
  */
 const initializePagesources = async (pageDir: string): Promise<void> => {
-  for await (const { path, fullPath } of readdirp(pageDir)) {
+  for await (let { path, fullPath } of readdirp(pageDir)) {
+    // replace \\ with / for paths on windows
+    path = path.replace(/\\/g, '/')
+    fullPath = fullPath.replace(/\\/g, '/')
+
     // unknown page file extension: ignore file
     if (!Object.values(pageFileTypes).flat().includes(extname(path))) {
       continue

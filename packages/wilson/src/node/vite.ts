@@ -19,12 +19,10 @@ export const getViteConfig = async ({
       include: [
         'preact',
         'preact/hooks',
+        'preact/jsx-runtime',
         'preact-iso',
         'hoofd/preact',
-        '@prefresh/vite/utils',
-        '@prefresh/vite/runtime',
       ],
-
       exclude: ['wilson/virtual'],
     },
     clearScreen: false,

@@ -1,6 +1,6 @@
-import { Plugin } from 'vite'
+import { Plugin, normalizePath } from 'vite'
 import { TransformResult, LoadResult, ResolveIdResult } from 'rollup'
-import { dirname, relative } from 'path'
+import { dirname, join, relative } from 'path'
 import { toRoot, transformJsx } from '../util'
 import minimatch from 'minimatch'
 import { getConfig } from '../config'
@@ -50,21 +50,23 @@ const pagesPlugin = async (): Promise<Plugin> => {
       const pageLayout =
         pageSource.frontmatter.layout ?? typeof pageLayouts === 'undefined'
           ? undefined
-          : pageLayouts.find(({ pattern = '**' }) =>
-              minimatch(
+          : pageLayouts.find(({ pattern = '**' }) => {
+              return minimatch(
                 pageSource.fullPath.replace(
-                  new RegExp(`^${process.cwd()}/src/pages/`),
+                  new RegExp(
+                    `^${normalizePath(join(process.cwd(), 'src', 'pages'))}/`
+                  ),
                   ''
                 ),
                 pattern
               )
-            )?.layout
+            })?.layout
 
       const layoutImport = pageLayout
         ? `import Layout from '${relative(
             dirname(id),
             toRoot(`./src/layouts/${pageLayout}`)
-          )}';`
+          ).replace(/\\/g, '/')}';`
         : `import { Fragment as Layout } from 'preact';`
 
       const componentProps = `

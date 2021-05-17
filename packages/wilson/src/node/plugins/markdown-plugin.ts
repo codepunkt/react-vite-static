@@ -1,5 +1,5 @@
 import { extname } from 'path'
-import { Plugin } from 'vite'
+import { normalizePath, Plugin } from 'vite'
 import { TransformResult } from 'rollup'
 import { toRoot } from '../util'
 import { getPageSources } from '../state'
@@ -13,7 +13,7 @@ const markdownPlugin = async (): Promise<Plugin> => {
     enforce: 'pre',
 
     transform(code: string, id: string): TransformResult {
-      if (!id.startsWith(toRoot('./src/pages/'))) return
+      if (!id.startsWith(normalizePath(toRoot('./src/pages/')))) return
       if (extname(id) !== '.md') return
 
       const pageSource = getPageSources().find(

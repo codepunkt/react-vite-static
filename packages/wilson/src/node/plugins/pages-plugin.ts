@@ -4,9 +4,9 @@ import { dirname, join, relative } from 'path'
 import { toRoot, transformJsx } from '../util'
 import minimatch from 'minimatch'
 import { getConfig } from '../config'
-import cache from '../cache'
 import { ContentPage, SelectPage, TaxonomyPage, TermsPage } from '../page'
 import { getPageSources } from '../state'
+import { MarkdownPageSource } from '../page-source'
 
 const virtualPageRegex = /^@wilson\/page-source\/(\d+)\/page\/(\d+)/
 
@@ -77,9 +77,11 @@ const pagesPlugin = async (): Promise<Plugin> => {
             ? `taxonomies={${JSON.stringify(page.taxonomies)}}`
             : ''
         }
-        tableOfContents={${JSON.stringify(
-          cache.markdown.toc.get(pageSource.fullPath)
-        )}}
+        ${
+          pageSource instanceof MarkdownPageSource
+            ? `headings={${JSON.stringify(pageSource.headings)}}`
+            : ''
+        }
       `
 
       const wrapper = `

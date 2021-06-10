@@ -21,7 +21,7 @@ import { JsxEmit, ModuleKind, transpileModule } from 'typescript'
  * Default values for optional properties in frontmatter.
  */
 const defaultFrontmatter: FrontmatterDefaults = {
-  kind: 'content',
+  type: 'content',
   date: 'Created',
   opengraphType: 'website',
 }
@@ -36,7 +36,7 @@ class FrontmatterParser {
   /**
    * Parses and returns frontmatter
    *
-   * @todo default draft on kind: `content` to false
+   * @todo default draft on type: `content` to false
    */
   public parseFrontmatter(): FrontmatterWithDefaults {
     const extension = extname(this.fullPath)
@@ -54,8 +54,8 @@ class FrontmatterParser {
       ...parsed,
     } as FrontmatterWithDefaults
 
-    // apply kind-specific defaults
-    if (frontmatter.kind === 'content') {
+    // apply type-specific defaults
+    if (frontmatter.type === 'content') {
       frontmatter = { draft: false, ...frontmatter }
     }
 

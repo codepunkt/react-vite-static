@@ -2,6 +2,7 @@ import {
   ContentFrontmatterWithDefaults,
   Frontmatter,
   FrontmatterWithDefaults,
+  Heading,
   SelectFrontmatterWithDefaults,
   TaxonomyFrontmatterWithDefaults,
   TermsFrontmatterWithDefaults,
@@ -45,22 +46,19 @@ const assetUrlPrefix = '_assetUrl_'
  * Represents a page source file in `pages` directory.
  */
 abstract class PageSource {
-  /**
-   * Transformed page source.
-   */
-  public transformedCode: string
-
-  /**
-   * Array of pages created from page source.
-   *
-   * Depending on page source frontmatter `kind`, this can be one or more
-   * pages.
-   */
+  public path: string
+  public fullPath: string
+  public transformedCode: string | null = null
   public pages: Page[] = []
-
+  public headings?: Heading[]
   public frontmatter: Frontmatter = {} as Frontmatter
 
-  constructor(public path: string, public fullPath: string) {
+  constructor(path: string, fullPath: string) {
+    this.path = path
+    this.fullPath = fullPath
+  }
+
+  public initialize(): void {
     this.transformedCode = this.transformCode(
       readFileSync(this.fullPath, 'utf-8')
     )
@@ -88,7 +86,9 @@ export class ContentPageSource extends PageSource {
   }
 }
 
-export class MarkdownContentPageSource extends ContentPageSource {
+export class MarkdownPageSource extends ContentPageSource {
+  public headings: Heading[] = []
+
   protected transformCode(originalSource: string): string {
     return transformJsx(this.transformMarkdown(originalSource))
   }
@@ -103,7 +103,11 @@ export class MarkdownContentPageSource extends ContentPageSource {
       // apply plugins that change HAST
       .use(remarkRelativeAssets, { assetUrlPrefix, assetUrlTagConfig })
       .use(rehypeSlug)
-      .use(rehypeExtractToc, { moduleId: this.fullPath })
+      .use(rehypeExtractToc, {
+        callback: (headings) => {
+          this.headings = headings
+        },
+      })
       // TODO: configure autolink headings
       .use(rehypeAutolinkHeadings, {})
       .use(rehypeStringify, {
@@ -117,12 +121,10 @@ export class MarkdownContentPageSource extends ContentPageSource {
     const relativeAssetUrls = (vfile.data as { assetUrls: string[] })
       .assetUrls as string[]
 
+    // if (this.frontmatter.title === 'Getting started')
     return this.htmlToPreact(html, relativeAssetUrls)
   }
 
-  /**
-   *
-   */
   private htmlToPreact(html: string, relativeAssetUrls: string[]): string {
     // create imports from relative asset urls and replace placeholders with imported vars
     const relativeAssetImports = relativeAssetUrls.map((url, i) => {
@@ -245,18 +247,33 @@ export const createPageSource = (
   fullPath: string,
   frontmatter: FrontmatterWithDefaults
 ): PageSourceType => {
-  switch (frontmatter.kind) {
+  let pageSource: PageSourceType
+  const constructorArgs: Parameters<typeof createPageSource> = [
+    path,
+    fullPath,
+    frontmatter,
+  ]
+
+  switch (frontmatter.type) {
     case 'content':
-      return extname(fullPath) === '.md'
-        ? new MarkdownContentPageSource(path, fullPath, frontmatter)
-        : new ContentPageSource(path, fullPath, frontmatter)
+      pageSource =
+        extname(fullPath) === '.md'
+          ? new MarkdownPageSource(...constructorArgs)
+          : new ContentPageSource(...constructorArgs)
+      break
     case 'taxonomy':
-      return new TaxonomyPageSource(path, fullPath, frontmatter)
+      pageSource = new TaxonomyPageSource(...constructorArgs)
+      break
     case 'terms':
-      return new TermsPageSource(path, fullPath, frontmatter)
+      pageSource = new TermsPageSource(...constructorArgs)
+      break
     case 'select':
-      return new SelectPageSource(path, fullPath, frontmatter)
+      pageSource = new SelectPageSource(...constructorArgs)
+      break
   }
+
+  pageSource.initialize()
+  return pageSource
 }
 
 export type PageSourceType =

@@ -1,25 +1,29 @@
 {
-    "debug.node.autoAttach": "off",
-    "editor.formatOnSave": true,
-    "editor.codeActionsOnSave": [
-      "source.fixAll"
-    ],
-    "files.associations": {
-      "*.js": "javascriptreact"
-    },
+  "debug.node.autoAttach": "off",
+  "terminal.integrated.tabs.enabled": false,
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/coverage": true,
+    "**/dist": true
+  },
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": ["source.fixAll"],
+  "files.associations": {
+    "*.js": "javascriptreact"
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "[javascript]": {
-      "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.suggestSelection": "recentlyUsed",
-      "editor.suggest.showKeywords": false
-    },
-    "[typescript]": {
-      "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.suggestSelection": "recentlyUsed",
-      "editor.suggest.showKeywords": false
-    },
-    "[markdown]": {
-      "editor.wordWrap": "wordWrapColumn",
-      "editor.wordWrapColumn": 80
-    },
+    "editor.suggestSelection": "recentlyUsed",
+    "editor.suggest.showKeywords": false
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.suggestSelection": "recentlyUsed",
+    "editor.suggest.showKeywords": false
+  },
+  "[markdown]": {
+    "editor.wordWrap": "wordWrapColumn",
+    "editor.wordWrapColumn": 80
   }
+}

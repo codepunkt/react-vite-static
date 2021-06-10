@@ -43,30 +43,30 @@ type TaxonomyData = Record<string, TaxonomyTerms>
 
 export type ContentFrontmatter = FrontmatterOptional &
   FrontmatterRequired & {
-    kind: 'content'
+    type: 'content'
     taxonomies?: TaxonomyData
     draft?: boolean
   }
 
 export type TermsFrontmatter = FrontmatterOptional &
   FrontmatterRequired & {
-    kind: 'terms'
+    type: 'terms'
     taxonomyName: string
   }
 
 /**
- * Has to have `kind`, `title`, `taxonomyName` and `permalink`.
+ * Has to have `type`, `title`, `taxonomyName` and `permalink`.
  */
 export type TaxonomyFrontmatter = FrontmatterOptional &
   FrontmatterRequired & {
-    kind: 'taxonomy'
+    type: 'taxonomy'
     taxonomyName: string
     permalink: string
   }
 
 export type SelectFrontmatter = FrontmatterOptional &
   FrontmatterRequired & {
-    kind: 'select'
+    type: 'select'
     taxonomyName: string
     selectedTerms: TaxonomyTerms
   }
@@ -74,11 +74,11 @@ export type SelectFrontmatter = FrontmatterOptional &
 export type FrontmatterDefaults = Required<
   Pick<FrontmatterOptional, 'date' | 'opengraphType'>
 > & {
-  kind:
-    | ContentFrontmatter['kind']
-    | TermsFrontmatter['kind']
-    | TaxonomyFrontmatter['kind']
-    | SelectFrontmatter['kind']
+  type:
+    | ContentFrontmatter['type']
+    | TermsFrontmatter['type']
+    | TaxonomyFrontmatter['type']
+    | SelectFrontmatter['type']
 }
 
 export type Frontmatter =
@@ -92,22 +92,22 @@ export type FrontmatterWithDefaults = Frontmatter & FrontmatterDefaults
 export type ContentFrontmatterWithDefaults = FrontmatterOptional &
   FrontmatterRequired &
   ContentFrontmatter &
-  FrontmatterDefaults & { kind: ContentFrontmatter['kind']; draft: boolean }
+  FrontmatterDefaults & { type: ContentFrontmatter['type']; draft: boolean }
 
 export type TermsFrontmatterWithDefaults = FrontmatterOptional &
   FrontmatterRequired &
   TermsFrontmatter &
-  FrontmatterDefaults & { kind: TermsFrontmatter['kind'] }
+  FrontmatterDefaults & { type: TermsFrontmatter['type'] }
 
 export type TaxonomyFrontmatterWithDefaults = FrontmatterOptional &
   FrontmatterRequired &
   TaxonomyFrontmatter &
-  FrontmatterDefaults & { kind: TaxonomyFrontmatter['kind'] }
+  FrontmatterDefaults & { type: TaxonomyFrontmatter['type'] }
 
 export type SelectFrontmatterWithDefaults = FrontmatterOptional &
   FrontmatterRequired &
   SelectFrontmatter &
-  FrontmatterDefaults & { kind: SelectFrontmatter['kind'] }
+  FrontmatterDefaults & { type: SelectFrontmatter['type'] }
 
 /**
  * Page-related information, edited for use in the client,
@@ -214,7 +214,7 @@ export interface PaginationRoutes {
 export type ClientPagination = BasePagination & PaginationRoutes
 
 export type ContentPageProps = PageProps & {
-  tableOfContents: Heading[]
+  headings?: Heading[]
   taxonomies?: TaxonomyData
 }
 

@@ -10,14 +10,17 @@ import {
   PageSourceType,
 } from './page-source'
 
-/**
- * @TODO combine state with cache.markdown used in unified plugins
- */
-interface State {
+interface InternalState {
   pageSources: PageSourceType[]
 }
 
-const state: State = {
+/**
+ * This object is used as a structured cache for various kinds
+ * of internal data.
+ *
+ * @todo combine state with cache.markdown used in unified plugins
+ */
+const state: InternalState = {
   pageSources: [],
 }
 
@@ -48,8 +51,6 @@ const initializePagesources = async (pageDir: string): Promise<void> => {
   // depend on them.
   for (const pageSource of getContentPageSources()) pageSource.createPages()
   for (const pageSource of getNonContentPageSources()) pageSource.createPages()
-
-  console.log(getPages())
 }
 
 /**

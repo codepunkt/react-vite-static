@@ -1,4 +1,4 @@
-import { PageProps } from 'wilson'
+import { ContentPageProps } from 'wilson'
 import { createContext, FunctionalComponent } from 'preact'
 import classes from './docs.module.scss'
 import Header from '../components/header'
@@ -10,30 +10,30 @@ import '../assets/global.scss'
 const ActiveSectionContext = createContext<string | null>(null)
 
 const Toc: FunctionalComponent<{
-  toc: PageProps['tableOfContents']
-}> = ({ toc }) => {
+  headings: Exclude<ContentPageProps['headings'], undefined>
+}> = ({ headings }) => {
   const activeSection = useContext(ActiveSectionContext)
-  const baseLevel = toc[0].level
+  const baseLevel = headings[0].level
   return (
     <ol className={classes.links}>
-      {toc.map((l, ci) => {
-        const nextIndex = toc.findIndex(
+      {headings.map((heading, ci) => {
+        const nextIndex = headings.findIndex(
           (h, i) => i > ci && h.level === baseLevel
         )
-        return l.level === baseLevel ? (
+        return heading.level === baseLevel ? (
           <MenuItem
-            isActive={activeSection === l.slug}
+            isActive={activeSection === heading.slug}
             showToc
-            toc={toc.filter(
+            headings={headings.filter(
               (h, i) =>
                 i > ci &&
                 h.level > baseLevel &&
                 h.level < 4 &&
                 (nextIndex !== -1 ? i < nextIndex : true)
             )}
-            href={`#${l.slug}`}
+            href={`#${heading.slug}`}
           >
-            {l.text}
+            {heading.text}
           </MenuItem>
         ) : null
       })}
@@ -44,23 +44,26 @@ const Toc: FunctionalComponent<{
 const MenuItem: FunctionalComponent<{
   href: string
   isActive?: boolean
-  toc: PageProps['tableOfContents']
+  headings: Exclude<ContentPageProps['headings'], undefined>
   showToc?: boolean
-}> = ({ children, href, isActive = false, toc, showToc = false }) => {
+}> = ({ children, href, isActive = false, headings, showToc = false }) => {
   const url = useLocation().url
+  console.log(headings)
   return (
     <li data-active={isActive}>
       <Link href={href}>{children}</Link>
-      {toc.length > 0 && (showToc || url === href) && <Toc toc={toc} />}
+      {headings.length > 0 && (showToc || url === href) && (
+        <Toc headings={headings} />
+      )}
     </li>
   )
 }
 
-const DocsLayout: FunctionalComponent<PageProps> = ({
+const DocsLayout: FunctionalComponent<ContentPageProps> = ({
   children,
   title,
   taxonomies,
-  tableOfContents,
+  headings = [],
 }) => {
   const [activeSection, setActiveSection] = useState<string | null>(null)
   useEffect(() => {
@@ -101,22 +104,22 @@ const DocsLayout: FunctionalComponent<PageProps> = ({
           <p className={classes.headline}>Documentation</p>
           <ol className={`${classes.links} ${classes.toplevel}`}>
             <ActiveSectionContext.Provider value={activeSection}>
-              <MenuItem toc={tableOfContents} href="/docs/why/">
+              <MenuItem headings={headings} href="/docs/why/">
                 Why Wilson?
               </MenuItem>
-              <MenuItem toc={tableOfContents} href="/docs/glossary/">
+              <MenuItem headings={headings} href="/docs/glossary/">
                 Glossary
               </MenuItem>
-              <MenuItem toc={tableOfContents} href="/docs/">
+              <MenuItem headings={headings} href="/docs/">
                 Getting started
               </MenuItem>
-              <MenuItem toc={tableOfContents} href="/docs/features/">
+              <MenuItem headings={headings} href="/docs/features/">
                 Features
               </MenuItem>
-              <MenuItem toc={tableOfContents} href="/docs/deploy/">
+              <MenuItem headings={headings} href="/docs/deploy/">
                 Deploying
               </MenuItem>
-              <MenuItem toc={tableOfContents} href="/docs/comparison/">
+              <MenuItem headings={headings} href="/docs/comparison/">
                 Comparison
               </MenuItem>
             </ActiveSectionContext.Provider>

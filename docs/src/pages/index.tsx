@@ -1,20 +1,19 @@
-import { PageProps, Frontmatter } from 'wilson'
+import { ContentPageProps, Frontmatter } from 'wilson'
 import { FunctionalComponent } from 'preact'
 import classes from './index.module.scss'
-import logoSrc from '../assets/wilson.svg'
+import logoSrc from '../assets/wilson-wordmark.svg'
 import InstallButton from '../components/install-button'
 
 /**
  * landing page inspiration:
  * - product hunt https://readme.so/
  */
-export const Page: FunctionalComponent<PageProps> = () => {
+export const Page: FunctionalComponent<ContentPageProps> = () => {
   return (
     <>
       <div className={classes.hero}>
         <div className={classes.logo}>
-          <img src={logoSrc} width="70" height="80" alt="Wilsonjs Logo" />
-          <span>wilson</span>
+          <img src={logoSrc} height="80" alt="Wilsonjs Logo" />
         </div>
         <h1 className={classes.claim}>{frontmatter.title}.</h1>
         <p className={classes.description}>

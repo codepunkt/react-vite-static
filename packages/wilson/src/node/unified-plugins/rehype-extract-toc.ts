@@ -1,9 +1,8 @@
 import { Element, Node, Parent, Properties, Text } from 'hast'
 import { VFile } from 'vfile'
-import cache from '../cache'
 import { Heading } from '../../types'
 
-export function findHeadings(node: Node): Heading[] {
+function findHeadings(node: Node): Heading[] {
   const headingNodes: Heading[] = []
   findHeadingsRecursive(node, headingNodes)
   return headingNodes
@@ -55,7 +54,7 @@ const validateHeadings: (headings: Heading[]) => string | void = (headings) => {
 }
 
 interface Options {
-  moduleId: string
+  callback: (headings: Heading[]) => unknown
 }
 
 /**
@@ -63,12 +62,12 @@ interface Options {
  */
 const rehypeExtractToc: (
   options: Options
-) => (tree: Node, file: VFile) => void = ({ moduleId }) => {
+) => (tree: Node, file: VFile) => void = ({ callback }) => {
   return (tree: Node) => {
     const headings = findHeadings(tree)
     const message = validateHeadings(headings)
     if (message) throw new Error(message)
-    cache.markdown.toc.set(moduleId, headings)
+    callback(headings)
   }
 }
 

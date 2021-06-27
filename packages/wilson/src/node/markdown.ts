@@ -65,11 +65,11 @@ type MarkdownTransformResult = {
    */
   html: string
   /**
-   *
+   * Array of all relative asset URLs.
    */
   assetUrls: string[]
   /**
-   * An array of Heading objects.
+   * Array of Heading objects.
    */
   headings: Heading[]
 }

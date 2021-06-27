@@ -91,11 +91,12 @@ export class MarkdownPageSource extends ContentPageSource {
       ${relativeAssetImports.join('')}
 
       export const Page = () => {
-        return <div dangerouslySetInnerHTML={{ __html: \`${htmlCode}\` }} />;
+        return <Fragment>${htmlCode}</Fragment>;
       };
     `
 
     const jsCode = transformJsx(preactCode)
+    console.log({ htmlCode, preactCode, jsCode })
     return jsCode
   }
 }

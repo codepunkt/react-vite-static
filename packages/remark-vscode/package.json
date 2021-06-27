@@ -1,0 +1,35 @@
+{
+  "name": "@wilson/remark-vscode",
+  "version": "1.0.0",
+  "license": "MIT",
+  "author": "Christoph Werner <christoph@codepunkt.de>",
+  "description": "Blazing-fast, opinionated static site generator for Preact",
+  "bin": {
+    "wilson": "bin/create-wilson-site.js"
+  },
+  "main": "dist/index.js",
+  "scripts": {
+    "prepare": "npm run build",
+    "build": "node scripts/index.js",
+    "prebuild": "git submodule update --init --depth 1"
+  },
+  "eslintConfig": {
+    "extends": [
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 2021
+    },
+    "env": {
+      "browser": true,
+      "node": true,
+      "es6": true
+    }
+  },
+  "dependencies": {
+    "loglevel": "^1.7.1",
+    "unist-util-visit": "^3.1.0",
+    "vscode-oniguruma": "^1.5.1",
+    "vscode-textmate": "^5.4.0"
+  }
+}

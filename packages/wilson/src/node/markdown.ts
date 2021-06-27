@@ -5,13 +5,15 @@ import remarkParse from 'remark-parse'
 import remarkToRehype from 'remark-rehype'
 import rehypeStringify from 'rehype-stringify'
 import remarkStringify from 'remark-stringify'
-import unified from 'unified'
 import rehypeRaw from 'rehype-raw'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import remarkRelativeAssets from './unified-plugins/remark-relative-assets'
 import rehypeExtractToc from './unified-plugins/rehype-extract-toc'
 import { assetUrlPrefix, assetUrlTagConfig } from './constants'
 import { Heading } from '../types'
+import unified from 'unified'
+// @ts-ignore
+import syntaxPlugin from '@wilson/remark-vscode'
 
 const frontmatterCache = new NodeCache()
 
@@ -99,6 +101,7 @@ export const transformMarkdown = (
     .use(remarkParse)
     // apply plugins that change MDAST
     .use(remarkStringify)
+    .use(syntaxPlugin)
     .use(remarkToRehype, { allowDangerousHtml: true })
     .use(rehypeRaw)
     // apply plugins that change HAST and gather additional information

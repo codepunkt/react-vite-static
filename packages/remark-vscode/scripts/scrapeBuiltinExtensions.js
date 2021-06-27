@@ -8,9 +8,9 @@ const { requirePlistOrJson } = require('../src/utils')
 const copyFile = util.promisify(fs.copyFile)
 const writeFile = util.promisify(fs.writeFile)
 const exists = util.promisify(fs.exists)
-const tryMkdir = /** @param {string} pathName */ (pathName) => {
+const tryMkdir = (pathName) => {
   try {
-    return fs.mkdirSync(pathName)
+    return fs.mkdirSync(pathName, { recursive: true })
   } catch (_) {
     return null
   }
@@ -18,10 +18,8 @@ const tryMkdir = /** @param {string} pathName */ (pathName) => {
 
 const grammarDestDir = path.resolve(__dirname, '../lib/grammars')
 const themeDestDir = path.resolve(__dirname, '../lib/themes')
-const grammarPath = /** @param {string} basename */ (basename) =>
-  path.join(grammarDestDir, basename)
-const themePath = /** @param {string} basename */ (basename) =>
-  path.join(themeDestDir, basename)
+const grammarPath = (basename) => path.join(grammarDestDir, basename)
+const themePath = (basename) => path.join(themeDestDir, basename)
 let languageId = 0
 
 glob(

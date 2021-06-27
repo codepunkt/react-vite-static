@@ -1,2 +1,2 @@
-// require('./codegen')
+require('./codegen')
 require('./scrapeBuiltinExtensions')

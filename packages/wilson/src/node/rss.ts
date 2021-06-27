@@ -47,12 +47,14 @@ export async function createRssFeed(): Promise<Feed[]> {
     const feedPageSources: ContentPageSource[] = []
 
     for (const pageSource of getContentPageSources()) {
-      if (typeof options.match === 'string') {
-        minimatch(pageSource.path, options.match) &&
-          feedPageSources.push(pageSource)
-      } else if (typeof options.match === 'function') {
-        options.match(pageSource.frontmatter) &&
-          feedPageSources.push(pageSource)
+      if (!pageSource.frontmatter.draft) {
+        if (typeof options.match === 'string') {
+          minimatch(pageSource.path, options.match) &&
+            feedPageSources.push(pageSource)
+        } else if (typeof options.match === 'function') {
+          options.match(pageSource.path, pageSource.frontmatter) &&
+            feedPageSources.push(pageSource)
+        }
       }
     }
 

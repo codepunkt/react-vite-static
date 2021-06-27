@@ -165,7 +165,9 @@ interface PaginationOptions {
 interface FeedOptions {
   title: string
   output: string
-  match?: string | ((frontmatter: Frontmatter) => boolean)
+  match?:
+    | string
+    | ((path: string, frontmatter: ContentFrontmatterWithDefaults) => boolean)
   language?: string
   ttl?: number
   managingEditor?: string

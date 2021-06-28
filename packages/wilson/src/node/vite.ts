@@ -1,10 +1,11 @@
 import { UserConfig as ViteUserConfig } from 'vite'
 import prefresh from '@prefresh/vite'
-import markdownPlugin from './plugins/markdown-plugin'
-import virtualPlugin from './plugins/virtual-plugin'
-import pagesPlugin from './plugins/pages-plugin'
-import indexHtmlPlugin from './plugins/index-html-plugin'
-import { join } from 'path'
+import markdownPlugin from './plugins/markdown-plugin.js'
+import virtualPlugin from './plugins/virtual-plugin.js'
+import pagesPlugin from './plugins/pages-plugin.js'
+import indexHtmlPlugin from './plugins/index-html-plugin.js'
+import { dirname, join } from 'path'
+import { fileURLToPath } from 'url'
 
 interface ViteConfigOptions {
   ssr?: boolean
@@ -44,7 +45,10 @@ export const getViteConfig = async ({
         // important so that each page chunk and the index export things for each other
         preserveEntrySignatures: 'allow-extension',
         input: ssr
-          ? join(__dirname, '../client/ssr/serverRender.js')
+          ? join(
+              dirname(fileURLToPath(import.meta.url)),
+              '../client/ssr/serverRender.js'
+            )
           : 'index.html',
       },
       manifest: !ssr,

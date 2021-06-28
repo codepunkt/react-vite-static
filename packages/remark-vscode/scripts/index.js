@@ -1,2 +1,1 @@
-require('./codegen')
 require('./scrapeBuiltinExtensions')

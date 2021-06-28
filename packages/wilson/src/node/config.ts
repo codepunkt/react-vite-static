@@ -4,7 +4,10 @@ import {
   SiteConfigWithDefaults,
 } from '../types'
 import { resolve } from 'path'
-import { pathExistsSync } from 'fs-extra'
+import fs from 'fs-extra'
+import { createRequire } from 'module'
+
+const require = createRequire(import.meta.url)
 
 const configDefaults: SiteConfigDefaults = {
   pageLayouts: [{ pattern: '**/*.md', layout: 'markdown' }],
@@ -43,7 +46,7 @@ export function getConfig(
 
   // Check config file existance.
   const configPath = resolve(root, configFileName)
-  const hasConfig = pathExistsSync(configPath)
+  const hasConfig = fs.pathExistsSync(configPath)
   if (!hasConfig) {
     throw new Error(`no ${configFileName} found.`)
   }

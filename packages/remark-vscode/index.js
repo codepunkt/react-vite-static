@@ -1,10 +1,13 @@
-const visit = require('unist-util-visit')
-const fs = require('fs')
-const path = require('path')
-const { parseRawGrammar, INITIAL, Registry } = require('vscode-textmate')
-const { loadWASM, OnigScanner, OnigString } = require('vscode-oniguruma')
+import { visit } from 'unist-util-visit'
+import fs from 'fs'
+import path from 'path'
+import textmate from 'vscode-textmate'
+import oniguruma from 'vscode-oniguruma'
+import { createRequire } from 'module'
 
-module.exports = () => {
+const require = createRequire(import.meta.url)
+
+export default () => {
   return (tree) => {
     visit(
       tree,
@@ -20,25 +23,25 @@ module.exports = () => {
               '../../release/onig.wasm'
             )
           ).buffer
-          const vscodeOnigurumaLib = loadWASM(wasmBin).then(() => {
+          const vscodeOnigurumaLib = oniguruma.loadWASM(wasmBin).then(() => {
             return {
               createOnigScanner(patterns) {
-                return new OnigScanner(patterns)
+                return new oniguruma.OnigScanner(patterns)
               },
               createOnigString(s) {
-                return new OnigString(s)
+                return new oniguruma.OnigString(s)
               },
             }
           })
 
           // Create a registry that can create a grammar from a scope name.
-          const registry = new Registry({
+          const registry = new textmate.Registry({
             onigLib: vscodeOnigurumaLib,
             loadGrammar: async (scopeName) => {
               if (scopeName === 'source.js') {
                 // https://github.com/textmate/javascript.tmbundle/blob/master/Syntaxes/JavaScript.plist
                 const content = fs.readFileSync('./JavaScript.plist')
-                return parseRawGrammar(content.toString())
+                return textmate.parseRawGrammar(content.toString())
               }
               console.log(`Unknown scope name: ${scopeName}`)
               return null
@@ -46,14 +49,14 @@ module.exports = () => {
           })
 
           // Load the JavaScript grammar and any other grammars included by it async.
-          registry.loadGrammar('source.jas').then((grammar) => {
+          registry.loadGrammar('source.js').then((grammar) => {
             if (grammar != null) {
               const text = [
                 `function sayHello(name) {`,
                 `\treturn "Hello, " + name;`,
                 `}`,
               ]
-              let ruleStack = INITIAL
+              let ruleStack = textmate.INITIAL
               for (let i = 0; i < text.length; i++) {
                 const line = text[i]
                 const lineTokens = grammar.tokenizeLine(line, ruleStack)

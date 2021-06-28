@@ -7,14 +7,14 @@ import {
   TaxonomyFrontmatterWithDefaults,
   TermsFrontmatterWithDefaults,
 } from '../types'
-import { readFileSync } from 'fs-extra'
-import { ContentPage, SelectPage, TaxonomyPage, TermsPage } from './page'
-import { getContentPages, getTaxonomyTerms } from './state'
-import { hasCommonElements, transformJsx } from './util'
+import { readFileSync } from 'fs'
+import { ContentPage, SelectPage, TaxonomyPage, TermsPage } from './page.js'
+import { getContentPages, getTaxonomyTerms } from './state.js'
+import { hasCommonElements, transformJsx } from './util.js'
 import { extname } from 'path'
-import { getConfig } from './config'
-import { transformMarkdown } from './markdown'
-import { assetUrlPrefix } from './constants'
+import { getConfig } from './config.js'
+import { transformMarkdown } from './markdown.js'
+import { assetUrlPrefix } from './constants.js'
 
 /**
  * Represents a page source file in `pages` directory.

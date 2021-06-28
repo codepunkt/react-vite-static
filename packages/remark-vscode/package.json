@@ -7,7 +7,8 @@
   "bin": {
     "wilson": "bin/create-wilson-site.js"
   },
-  "main": "dist/index.js",
+  "type": "module",
+  "exports": "./index.js",
   "scripts": {
     "prepare": "npm run build",
     "build": "node scripts/index.js",
@@ -18,7 +19,8 @@
       "eslint:recommended"
     ],
     "parserOptions": {
-      "ecmaVersion": 2021
+      "ecmaVersion": 2021,
+      "sourceType": "module"
     },
     "env": {
       "browser": true,

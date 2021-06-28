@@ -7,7 +7,12 @@
   "bin": {
     "wilson": "bin/wilson.js"
   },
-  "main": "dist/node/index.js",
+  "type": "module",
+  "exports": {
+    ".": "./dist/node/index.js",
+    "./package.json": "./package.json",
+    "./dist/client/main.js": "./dist/client/main.js"
+  },
   "types": "dist/node/index.d.ts",
   "files": [
     "bin/**",
@@ -23,6 +28,7 @@
     "url": "https://github.com/codepunkt/wilson/issues"
   },
   "scripts": {
+    "wilson": "wilson",
     "build": "yarn run clean && run-p \"build:*\" && yarn run copy:types",
     "build:node": "tsc -p src/node",
     "build:client": "tsc -p src/client",

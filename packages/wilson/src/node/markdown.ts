@@ -7,11 +7,12 @@ import rehypeStringify from 'rehype-stringify'
 import remarkStringify from 'remark-stringify'
 import rehypeRaw from 'rehype-raw'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
-import remarkRelativeAssets from './unified-plugins/remark-relative-assets'
-import rehypeExtractToc from './unified-plugins/rehype-extract-toc'
-import { assetUrlPrefix, assetUrlTagConfig } from './constants'
+import remarkRelativeAssets from './unified-plugins/remark-relative-assets.js'
+import rehypeExtractToc from './unified-plugins/rehype-extract-toc.js'
+import { assetUrlPrefix, assetUrlTagConfig } from './constants.js'
 import { Heading } from '../types'
 import unified from 'unified'
+// eslint-disable-next-line
 // @ts-ignore
 import syntaxPlugin from '@wilson/remark-vscode'
 

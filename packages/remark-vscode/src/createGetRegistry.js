@@ -1,14 +1,13 @@
-const fs = require('fs')
-const path = require('path')
-const logger = require('loglevel')
-const oniguruma = require('vscode-oniguruma')
-const {
-  getGrammarLocation,
-  getGrammar,
-  getAllGrammars,
-} = require('./storeUtils')
-const { readFile } = require('./utils')
-const { Registry, parseRawGrammar } = require('vscode-textmate')
+import fs from 'fs'
+import path from 'path'
+import logger from 'loglevel'
+import oniguruma from 'vscode-oniguruma'
+import { getGrammarLocation, getGrammar, getAllGrammars } from './storeUtils.js'
+import { readFile } from './utils.js'
+import textmate from 'vscode-textmate'
+import { createRequire } from 'module'
+
+const require = createRequire(import.meta.url)
 
 const wasmBin = fs.readFileSync(
   path.join(require.resolve('vscode-oniguruma'), '../../release/onig.wasm')
@@ -61,19 +60,19 @@ function warnMissingLanguageFile(missingScopeName, rootScopeName) {
   )
 }
 
-function createGetRegistry() {
+export function createGetRegistry() {
   let registry
 
   async function getRegistry(cache, rootScopeName) {
     if (!registry) {
       const grammars = getAllGrammars(await cache.get('grammars'))
-      registry = new Registry({
+      registry = new textmate.Registry({
         loadGrammar: async (scopeName) => {
           const grammarInfo = getGrammar(scopeName, grammars)
           const fileName = grammarInfo && getGrammarLocation(grammarInfo)
           if (fileName) {
             const contents = await readFile(fileName, 'utf8')
-            return parseRawGrammar(contents, fileName)
+            return textmate.parseRawGrammar(contents, fileName)
           }
           warnMissingLanguageFile(scopeName, rootScopeName)
         },
@@ -94,5 +93,3 @@ function createGetRegistry() {
   }
   return getRegistry
 }
-
-module.exports = createGetRegistry

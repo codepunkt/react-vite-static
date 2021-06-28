@@ -29,6 +29,8 @@
     }
   },
   "dependencies": {
+    "cache-manager": "^3.4.4",
+    "decompress": "^4.2.1",
     "graphql": "^15.5.1",
     "loglevel": "^1.7.1",
     "typescript": "^4.3.4",

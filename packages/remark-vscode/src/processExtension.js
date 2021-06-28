@@ -1,24 +1,25 @@
-const path = require('path')
-const process = require('process')
-const logger = require('loglevel')
-const {
+import path from 'path'
+import process from 'process'
+import logger from 'loglevel'
+import {
   getLanguageNames,
   requireJson,
   requirePlistOrJson,
   exists,
   readFile,
   readdir,
-  createRequire,
-} = require('./utils')
-const { getHighestBuiltinLanguageId } = require('./storeUtils')
+} from './utils.js'
+import { createRequire } from 'module'
+import { getHighestBuiltinLanguageId } from './storeUtils.js'
+import { fileURLToPath } from 'url'
+
+const __dirname = path.resolve(fileURLToPath(import.meta.url))
 const unzipDir = path.resolve(__dirname, '../lib/extensions')
-const requireMain = createRequire(require.main.filename)
+
+// const requireMain = createRequire(require.main.filename)
 const requireCwd = createRequire(path.join(process.cwd(), 'index.js'))
 
-/**
- * @param {string} packageJsonPath
- */
-async function processExtension(packageJsonPath) {
+export async function processExtension(packageJsonPath) {
   const packageJson = requireJson(packageJsonPath)
   let grammars = {}
   let themes = {}
@@ -146,17 +147,15 @@ async function getExtensionPackageJsonPath(specifier, host) {
  * globally, and this plugin could be npm linked. If both of those things happen, we
  * can also try resolving from the current working directory. One of these will
  * probably always work.
- * @param {string} specifier
  */
 function requireResolveExtension(specifier) {
   return (
     tryResolve(require) ||
-    tryResolve(requireMain) ||
+    // tryResolve(requireMain) || // file name that node was executed with
     tryResolve(requireCwd) ||
     require.resolve(path.join(specifier, 'package.json'))
   ) // If none work, throw the best error stack
 
-  /** @param {NodeRequire} req */
   function tryResolve(req) {
     try {
       return req.resolve(path.join(specifier, 'package.json'))
@@ -166,7 +165,7 @@ function requireResolveExtension(specifier) {
   }
 }
 
-async function processExtensions(extensions, host, cache) {
+export async function processExtensions(extensions, host, cache) {
   let languageId = getHighestBuiltinLanguageId() + 1
   for (const extension of extensions) {
     const packageJsonPath = await getExtensionPackageJsonPath(extension, host)
@@ -179,10 +178,6 @@ async function processExtensions(extensions, host, cache) {
   }
 }
 
-/**
- * @param {Record<string, string> | undefined} tokenTypes
- * @returns {import('vscode-textmate').ITokenTypeMap}
- */
 function toStandardTokenTypes(tokenTypes) {
   return (
     tokenTypes &&
@@ -196,10 +191,6 @@ function toStandardTokenTypes(tokenTypes) {
   )
 }
 
-/**
- * @param {string} tokenType
- * @returns {import('vscode-textmate').StandardTokenType}
- */
 function toStandardTokenType(tokenType) {
   switch (tokenType.toLowerCase()) {
     case 'comment':
@@ -212,5 +203,3 @@ function toStandardTokenType(tokenType) {
       return 0
   }
 }
-
-module.exports = { processExtension, processExtensions }

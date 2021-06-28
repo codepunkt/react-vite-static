@@ -1,5 +1,8 @@
-const path = require('path')
-const { exists } = require('./utils')
+import path from 'path'
+import { exists } from './utils.js'
+import { fileURLToPath } from 'url'
+
+const __dirname = path.resolve(fileURLToPath(import.meta.url))
 
 let grammarManifest
 let themeManifest
@@ -21,7 +24,7 @@ function resolveAlias(language, languageAliases) {
   return languageAliases[language] || language
 }
 
-function getScope(language, grammarCache, languageAliases) {
+export function getScope(language, grammarCache, languageAliases) {
   const resolvedLanguage = resolveAlias(language, languageAliases)
   const grammars = { ...getGrammarManifest(), ...grammarCache }
   for (const scopeName in grammars) {
@@ -32,13 +35,13 @@ function getScope(language, grammarCache, languageAliases) {
   }
 }
 
-function getGrammarLocation(grammar) {
+export function getGrammarLocation(grammar) {
   return path.isAbsolute(grammar.path)
     ? grammar.path
     : path.resolve(__dirname, '../lib/grammars', grammar.path)
 }
 
-async function ensureThemeLocation(
+export async function ensureThemeLocation(
   themeNameOrId,
   themeCache,
   contextDirectory
@@ -76,7 +79,7 @@ async function ensureThemeLocation(
   return locallyResolved
 }
 
-function getHighestBuiltinLanguageId() {
+export function getHighestBuiltinLanguageId() {
   return Object.keys(getGrammarManifest()).reduce(
     (highest, scopeName) =>
       Math.max(highest, getGrammarManifest()[scopeName].languageId),
@@ -84,19 +87,10 @@ function getHighestBuiltinLanguageId() {
   )
 }
 
-function getGrammar(scopeName, grammarCache) {
+export function getGrammar(scopeName, grammarCache) {
   return getAllGrammars(grammarCache)[scopeName]
 }
 
-function getAllGrammars(grammarCache) {
+export function getAllGrammars(grammarCache) {
   return { ...getGrammarManifest(), ...grammarCache }
-}
-
-module.exports = {
-  getScope,
-  getGrammar,
-  getGrammarLocation,
-  ensureThemeLocation,
-  getHighestBuiltinLanguageId,
-  getAllGrammars,
 }

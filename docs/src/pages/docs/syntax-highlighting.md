@@ -1,14 +1,11 @@
 ---
-title: Comparison
+title: Syntax highlighting
 taxonomies:
   tags:
     - docs
-    - Wat the Eff?
-  categories:
-    - writing
 ---
 
-foo `js•const foo = 'bar';` bar
+Syntax highlighting, both inline like this: `js•const foo = 'bar';` and code blocks like the following one, work out of the box.
 
 ```js {numberLines}
 /** @jsx jsx */

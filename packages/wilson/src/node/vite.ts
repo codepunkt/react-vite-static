@@ -1,10 +1,10 @@
 import { UserConfig as ViteUserConfig } from 'vite'
-import prefresh from '@prefresh/vite'
 import markdownPlugin from './plugins/markdown-plugin'
 import virtualPlugin from './plugins/virtual-plugin'
 import pagesPlugin from './plugins/pages-plugin'
 import indexHtmlPlugin from './plugins/index-html-plugin'
 import { join } from 'path'
+import preact from '@preact/preset-vite'
 
 interface ViteConfigOptions {
   ssr?: boolean
@@ -31,7 +31,9 @@ export const getViteConfig = async ({
       await markdownPlugin(),
       await pagesPlugin(),
       await virtualPlugin(),
-      prefresh({}),
+      preact({
+        devtoolsInProd: true,
+      }),
     ],
     build: {
       ssr,

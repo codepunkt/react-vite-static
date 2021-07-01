@@ -8,7 +8,7 @@ import { toStatic } from 'hoofd/preact'
 let vnodeHook: null | ((vnode: VNode) => void)
 
 const old = options.vnode
-options.vnode = (vnode) => {
+options.vnode = (vnode: VNode) => {
   if (old) old(vnode)
   if (vnodeHook) vnodeHook(vnode)
 }
@@ -68,7 +68,7 @@ export async function renderToString(url: string): Promise<PrerenderResult> {
 
   try {
     const html = await render()
-    const head = (toStatic() as unknown) as PrerenderResult['head']
+    const head = toStatic() as unknown as PrerenderResult['head']
     return { links, html, head }
   } finally {
     vnodeHook = null

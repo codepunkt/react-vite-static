@@ -21,24 +21,22 @@ declare global {
 //   }
 // }
 
-type AssetState = {
+type State = {
   assets: string[]
   setAssets: StateUpdater<string[]>
   previousAssets: string[]
+  dependencies: Record<string, Dependencies>
 }
 
-type HrefToDependencies = Record<string, Dependencies>
-
-const DepsContext = createContext<null | HrefToDependencies>(null)
-const AssetsContext = createContext<null | AssetState>(null)
+const Context = createContext<null | State>(null)
 
 export const QuicklinkProvider: FunctionComponent = ({ children }) => {
-  const [hrefToDeps, setHrefToDeps] = useState<Record<string, Dependencies>>({})
+  const [dependencies, setDependencies] =
+    useState<Record<string, Dependencies> | null>(null)
   const [assets, setAssets] = useState<string[]>([])
   const previousAssets = usePrevious<string[]>(assets)
 
   useEffect(() => {
-    setHrefToDeps((window.__WILSON_DATA__ ?? {}).pathPreloads)
     setAssets([
       ...new Set(
         Array.from(
@@ -54,18 +52,20 @@ export const QuicklinkProvider: FunctionComponent = ({ children }) => {
           .filter((a) => a !== null) as string[]
       ),
     ])
+    setDependencies((window.__WILSON_DATA__ ?? {}).pathPreloads)
   }, [])
 
   return (
-    <AssetsContext.Provider value={{ assets, setAssets, previousAssets }}>
-      <DepsContext.Provider value={hrefToDeps}>{children}</DepsContext.Provider>
-    </AssetsContext.Provider>
+    <Context.Provider
+      value={
+        dependencies === null
+          ? null
+          : { assets, dependencies, previousAssets, setAssets }
+      }
+    >
+      {children}
+    </Context.Provider>
   )
-}
-
-const useAssets = () => {
-  const value = useContext(AssetsContext)
-  return value as AssetState
 }
 
 const prefetch = (url: string): Promise<unknown> => {
@@ -91,26 +91,29 @@ const usePrevious = <T extends unknown>(value: T): T => {
 }
 
 export const useQuicklink = (): void => {
-  const hrefToDeps = useContext(DepsContext) as HrefToDependencies
-  const { assets, previousAssets, setAssets } = useAssets()
+  const state = useContext(Context)
 
   useEffect(() => {
-    const newAssets = assets.filter((x) => previousAssets.indexOf(x) === -1)
-    if (
-      previousAssets !== undefined &&
-      previousAssets.length &&
-      newAssets.length
-    ) {
-      newAssets.forEach((url) => prefetch(`/${url}`))
+    if (state !== null) {
+      const { assets, previousAssets } = state
+      const newAssets = assets.filter((x) => previousAssets.indexOf(x) === -1)
+      if (
+        previousAssets !== undefined &&
+        previousAssets.length &&
+        newAssets.length
+      ) {
+        newAssets.forEach((url) => prefetch(`/${url}`))
+      }
     }
-  }, [assets, previousAssets])
+  }, [state])
 
   useEffect(() => {
-    if (hrefToDeps) {
+    if (state !== null) {
+      const { assets, dependencies, setAssets } = state
       const getDeps = (href: string) => {
         return [
-          ...(hrefToDeps[href] ?? { js: [] }).js,
-          ...(hrefToDeps[href] ?? { css: [] }).css,
+          ...(dependencies[href] ?? { js: [] }).js,
+          ...(dependencies[href] ?? { css: [] }).css,
         ]
       }
 
@@ -134,5 +137,5 @@ export const useQuicklink = (): void => {
         observer.disconnect()
       }
     }
-  }, [hrefToDeps, setAssets])
+  }, [state])
 }

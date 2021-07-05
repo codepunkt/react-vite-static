@@ -8,14 +8,18 @@ taxonomies:
     - writing
 ---
 
-## Lorem Ipsum
+## Overview
 
-Lorem markdownum **causa venisset vulnere** sistere tum conpagibus rura _sic
-campus_, iunctisque equidem prima, nascuntur? Ulla coniecit quarum.
+Wilson is a [Preact]()-based open-source framework that provides a faster and leaner development experience for modern websites. It's great whether you're building a landing page, portfolio site, developer blog or documentation site.
 
-> Tua admovet diros, ordine venti, flagrat quam undas, tantum? Pittheia animo
-> ira adsuetaque succiduo unguibus **tosta** in aeno, Rhoetei. Viderat montes
-> corpora.
+It consists of two major parts:
+
+- A development server that is based on [native ES modules]() and provides best in class developer experience like extremely fast [Hot Module Replacement (HMR)]().
+- Part B
+
+```js
+const foo = 'bar'
+```
 
 Lorem markdownum **causa venisset vulnere** sistere tum conpagibus rura _sic
 campus_, iunctisque equidem prima, nascuntur? Ulla coniecit quarum.

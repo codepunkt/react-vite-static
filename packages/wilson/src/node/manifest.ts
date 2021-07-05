@@ -1,7 +1,11 @@
 import { extname } from 'path'
 import { Manifest } from 'vite'
 
-export const wrapManifest = (manifest: Manifest) => {
+export const wrapManifest = (
+  manifest: Manifest
+): {
+  getPageDependencies: typeof getPageDependencies
+} => {
   const getJsDependencies = (paths: string[]): string[] => {
     return paths
       .map((path) => [manifest[path].file, ...(manifest[path].imports ?? [])])

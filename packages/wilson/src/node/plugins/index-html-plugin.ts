@@ -1,6 +1,6 @@
 import { HtmlTagDescriptor, Plugin } from 'vite'
 import visit from 'unist-util-visit'
-import is from 'unist-util-is'
+import { is } from 'unist-util-is'
 import { getConfig } from '../config.js'
 import { Node, Element } from 'hast'
 import parse from 'rehype-parse'

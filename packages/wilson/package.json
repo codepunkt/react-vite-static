@@ -56,7 +56,6 @@
     ]
   },
   "dependencies": {
-    "@codepunkt/gatsby-remark-vscode": "^3.2.1",
     "@codepunkt/wasm-layout-text": "^3.0.0",
     "@preact/preset-vite": "^2.1.0",
     "acorn": "^8.1.1",
@@ -68,6 +67,7 @@
     "estree-walker": "3.0.0",
     "express": "^4.17.1",
     "fs-extra": "^10.0.0",
+    "gatsby-remark-vscode": "^3.3.0",
     "gray-matter": "^4.0.2",
     "hast": "^1.0.0",
     "hoofd": "^1.2.2",

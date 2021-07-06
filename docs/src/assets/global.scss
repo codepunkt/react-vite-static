@@ -1,7 +1,6 @@
 :root {
-  --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica,
+    Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
   --font-family-mono: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
   --header-height: 5rem;
@@ -15,30 +14,38 @@
 
 html {
   scroll-behavior: smooth;
-  line-height: 1.7;
+  font: 400 18px/1.7 var(--font-family-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
   margin: 0;
   min-height: calc(100vh - 8rem);
-  font-family: var(--font-family-base);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  background: #f4f4f4 !important;
+  background: #f7f7f7 !important;
+  border: 1px solid #dadce0;
   font-family: var(--font-family-mono);
-  font-size: 0.875rem;
-  padding: 2px 4px;
-  border-radius: 4px;
+  font-size: 0.88rem;
+  padding: 0.125em 0.25em;
 }
 
 .grvsc-container {
-  background: #f8f8f8 !important;
-  border: 1px solid #ccc;
-  border-radius: 4px !important;
+  background: #f7f7f7 !important;
+  border: 1px solid #dadce0;
+  border-radius: 0 !important;
   code {
     background: transparent !important;
+    border: 0 !important;
+  }
+}
+
+a {
+  color: #3740ff;
+  &:focus,
+  &:hover {
+    text-decoration: none;
   }
 }

@@ -39,29 +39,31 @@
   }
 
   li {
-    margin: 0.35rem 0;
+    border-left: 1px solid #dadce0;
   }
   li li {
-    margin: -0.2rem 0;
+    margin: -0.3rem 0;
+    border-left: 0;
   }
   li li[data-active] a {
-    color: #646cff;
-    font-weight: 600;
+    color: #3740ff;
   }
 
   a {
     text-decoration: none;
     color: #111827;
-    padding: 0.1rem 1.5rem 0.1rem 0.75rem;
+    padding: 0.35rem 1.5rem 0.35rem 0.75rem;
     border-left: 5px solid #fff;
+    &:hover {
+      text-decoration: underline;
+    }
     &:hover,
     &[data-active] {
-      color: #646cff;
+      color: #3740ff;
     }
 
     &[data-active] {
-      border-left: 5px solid #646cff;
-      font-weight: 600;
+      border-left: 3px solid #3740ff;
     }
   }
 }
@@ -80,17 +82,13 @@
   h6 {
     color: #111827;
     scroll-margin-top: calc(var(--header-height) + 1rem);
+    font-weight: 400;
   }
 
+  h1 {
+    font-weight: 500;
+  }
   h2 {
     border-bottom: 1px solid #e8e8e9;
-  }
-
-  a {
-    color: #646cff;
-    text-decoration: none;
-    &:hover {
-      text-decoration: underline;
-    }
   }
 }

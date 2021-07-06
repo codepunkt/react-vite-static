@@ -30,11 +30,11 @@
   align-items: center;
 
   &:hover {
-    color: #646cff;
+    color: #3740ff;
+    text-decoration: underline;
   }
   &[data-active] {
     color: #000;
-    font-weight: 600;
   }
 
   span + svg {

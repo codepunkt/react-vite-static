@@ -24,6 +24,8 @@ const foo = 'bar'
 Lorem markdownum **causa venisset vulnere** sistere tum conpagibus rura _sic
 campus_, iunctisque equidem prima, nascuntur? Ulla coniecit quarum.
 
+You can dynamically construct repeatable nested blocks like `setting` using a special `dynamic` block type, which is supported inside `resource`, `data`, `provider`, and `provisioner` blocks:
+
 > Tua admovet diros, ordine venti, flagrat quam undas, tantum? Pittheia animo
 > ira adsuetaque succiduo unguibus **tosta** in aeno, Rhoetei. Viderat montes
 > corpora.

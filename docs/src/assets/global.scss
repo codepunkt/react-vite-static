@@ -25,3 +25,20 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+code {
+  background: #f4f4f4 !important;
+  font-family: var(--font-family-mono);
+  font-size: 0.875rem;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.grvsc-container {
+  background: #f8f8f8 !important;
+  border: 1px solid #ccc;
+  border-radius: 4px !important;
+  code {
+    background: transparent !important;
+  }
+}

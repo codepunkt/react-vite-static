@@ -1,8 +1,24 @@
 import { extname } from 'path'
-import { normalizePath, Plugin } from 'vite'
+import { HmrContext, ModuleNode, normalizePath, Plugin } from 'vite'
 import { TransformResult } from 'rollup'
 import { toRoot } from '../util.js'
-import { getPageSources } from '../state.js'
+import {
+  getContentPageSources,
+  getPageSources,
+  updateMarkdownPageSource,
+} from '../state.js'
+
+/**
+ * Checks if a file is a markdown page source.
+ *
+ * @param filePath The path of the file to check
+ * @returns A boolean value
+ */
+const isMarkdownPage = (filePath: string): boolean => {
+  if (!filePath.startsWith(normalizePath(toRoot('./src/pages/')))) return false
+  if (extname(filePath) !== '.md') return false
+  return true
+}
 
 /**
  * Transform markdown to HTML to Preact components
@@ -12,12 +28,25 @@ const markdownPlugin = async (): Promise<Plugin> => {
     name: 'wilson-plugin-page-markdown',
     enforce: 'pre',
 
+    async handleHotUpdate({
+      file,
+      modules,
+    }: HmrContext): Promise<ModuleNode[] | void> {
+      if (!isMarkdownPage(file)) {
+        return
+      }
+
+      await updateMarkdownPageSource(file)
+      return modules
+    },
+
     transform(code: string, id: string): TransformResult {
-      if (!id.startsWith(normalizePath(toRoot('./src/pages/')))) return
-      if (extname(id) !== '.md') return
+      if (!isMarkdownPage(id)) {
+        return
+      }
 
       const pageSource = getPageSources().find(
-        (pageSource) => pageSource.fullPath === id
+        (pageSource) => pageSource.path === id
       )
 
       if (pageSource === undefined) {

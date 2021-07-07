@@ -29,16 +29,21 @@ const markdownPlugin = async (): Promise<Plugin> => {
       file,
       modules,
     }: HmrContext): Promise<ModuleNode[] | void> {
+      // we're only interested in markdown pages here
       if (!isMarkdownPage(file)) {
         return
       }
 
+      // find the appropriate page source
       const pageSource = getPageSources().find((s) => s.path === file)
       if (!pageSource) {
-        return
+        throw new Error(`page source for HMR file ${file} not found!`)
       }
 
+      // tell it to handle the update
       await (pageSource as MarkdownPageSource).handleHotUpdate()
+
+      // return the modules
       return modules
     },
 

@@ -1,6 +1,6 @@
 [build]
   publish = "docs/dist/"
-  command = "yarn run wilson:build && yarn run docs:build"
+  command = "yarn install && cd packages/wilson && yarn && yarn build && cd ../../docs && yarn && yarn build"
 
 [build.environment]
   NODE_ENV = "production"

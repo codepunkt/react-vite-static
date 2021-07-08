@@ -894,10 +894,10 @@
   resolved "https://registry.yarnpkg.com/@prefresh/utils/-/utils-1.1.1.tgz#ffe7f2e6bd48a0633631a3d92c0ee4bdeb0ac330"
   integrity sha512-MUhT5m2XNN5NsZl4GnpuvlzLo6VSTa/+wBfBd3fiWUvHGhv0GF9hnA1pd//v0uJaKwUnVRQ1hYElxCV7DtYsCQ==
 
-"@prefresh/vite@^2.1.0", "@prefresh/vite@^2.2.0":
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/@prefresh/vite/-/vite-2.2.2.tgz#9da1d5fbab3e57fb774062f31fa39ddb93e11229"
-  integrity sha512-cPQZAuorYCIMxBkH7zGJ75mHfPltWoW6ADdnphQ6J0PzndsJ2w6eiu30ydMW6RGMg2vIGxgAAl/vBkwS7WFqBw==
+"@prefresh/vite@^2.1.0", "@prefresh/vite@^2.2.3":
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/@prefresh/vite/-/vite-2.2.3.tgz#a06c7d18b93893c4bc4b90cd2b215990dc4a0906"
+  integrity sha512-TlAzVRKAZ3kiUryLzCd3AoqZDK6K7qZDc7C3QPI7hNwDGyZmJaHY+SXNMCCDaBW5xn9YlYqz/5bl3P4tptAcOg==
   dependencies:
     "@babel/core" "^7.9.6"
     "@prefresh/babel-plugin" "0.4.1"

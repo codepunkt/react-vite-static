@@ -1,0 +1,73 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+      - 'packages/wilson/**'
+      - 'netlify.toml'
+      - 'yarn.lock'
+  workflow_dispatch:
+
+jobs:
+
+  # This job will
+  #   - deploy a preview every time there is a PR to the main branch
+  #     opened, synchronized or reopened
+  #   - comment on that PR with the preview deploy URL
+  deployPreview:
+    name: Deploy preview to Netlify
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.ref != 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Node.js 14.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14.x
+
+      - name: Set yarn cache dir as output
+        id: cache-dir
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - name: Cache dependencies
+        id: cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: yarn --frozen-lockfile
+
+      - name: Build wilson
+        env:
+          NODE_ENV: production
+        run: |
+          yarn wilson:build
+
+      - name: Build website
+        env:
+          NODE_ENV: production
+        run: |
+          yarn docs:build
+
+      - name: Deploy website to Netlify
+        uses: South-Paw/action-netlify-deploy@v1.2.0
+        with:
+          github-token: ${{ secrets.RELEASE_TOKEN }}
+          netlify-auth-token: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          netlify-site-id: ${{ secrets.NETLIFY_SITE_ID }}
+          build-dir: './docs/dist'
+          draft: true
+          comment-on-pull-request: true

@@ -15,7 +15,9 @@
     "wilson:build": "yarn workspace wilson build",
     "wilson:start": "yarn workspace wilson start",
     "start": "run-p wilson:start docs:start",
-    "build": "run-s wilson:build docs:build docs:serve"
+    "build": "run-s wilson:build docs:build docs:serve",
+    "pre-commit": "lint-staged",
+    "prepare": "husky install"
   },
   "engines": {
     "node": ">= 14.16.0",
@@ -38,11 +40,6 @@
         }
       }
     ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
   },
   "lint-staged": {
     "{docs,packages}/**/*.{js,ts}": [

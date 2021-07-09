@@ -4,6 +4,10 @@ on:
   pull_request:
     branches:
       - main
+    paths:
+      - 'packages/**'
+      - 'tsconfig.json'
+      - 'yarn.lock'
   workflow_dispatch:
 
 jobs:

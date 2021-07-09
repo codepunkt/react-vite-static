@@ -1,22 +1,17 @@
-name: Release
+name: Build docs
 
 on:
-  push:
+  pull_request:
     branches:
       - main
   workflow_dispatch:
 
 jobs:
-  release:
-    name: Release
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v2
-        with:
-          # This makes Actions fetch all Git history so that Changesets
-          # can generate changelogs with the correct commits
-          fetch-depth: 0
+      - uses: actions/checkout@v2
 
       - name: Setup Node.js 14.x
         uses: actions/setup-node@v2
@@ -40,7 +35,10 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: yarn --frozen-lockfile
 
-      - name: Create Release Pull Request
-        uses: changesets/action@master
+      - name: Build wilson
         env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          NODE_ENV: production
+        run: |
+          yarn wilson:build
+
+      # - name: Test

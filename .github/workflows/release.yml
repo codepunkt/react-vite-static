@@ -30,11 +30,18 @@ jobs:
       - name: Cache dependencies
         id: cache
         uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
         with:
-          path: ${{ steps.cache-dir.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          path: |
+            ${{ steps.cache-dir.outputs.dir }}
+            node_modules
+            */*/node_modules
+          key: ${{ runner.os }}-yarn-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
+            ${{ runner.os }}-yarn-${{ env.cache-name }}-
             ${{ runner.os }}-yarn-
+            ${{ runner.os }}-
 
       - name: Install Dependencies
         if: steps.cache.outputs.cache-hit != 'true'

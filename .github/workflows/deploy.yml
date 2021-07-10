@@ -57,13 +57,13 @@ jobs:
           github-token: ${{ secrets.RELEASE_TOKEN }}
           script: |
             const { issue: { number: issue_number, owner, repo }  } = context;
-            const [netlifyUrl, lighthouseUrl] = Object.entries(
-              JSON.parse('${{ steps.lighthouse.outputs.links }}')
-            )[0];
+            const links = Object.entries(JSON.parse('${{ steps.lighthouse.outputs.links }}'));
+            const [netlifyUrl, lighthouseUrl] = links[0];
+            const [netlifyUrl2, lighthouseUrl2] = links[1];
             const summary = JSON.parse('${{ steps.lighthouse.outputs.manifest }}')[0].summary;
             github.issues.createComment({
               issue_number,
               owner,
               repo, 
-              body: `### Links\n- [Preview Deployment](${netlifyUrl})\n- [Lightouse Report](${lighthouseUrl})\n\n${JSON.stringify(summary)}`
+              body: `### Links\n- [Preview Deployment](${netlifyUrl})\n- [Lighthouse Report](${lighthouseUrl})\n\n${JSON.stringify(summary)}\n![](https://img.shields.io/badge/Accessibility-${~~(summary.accessibility * 100)}-green?style=flat-square)\n\n${lighthouseUrl2}`
             });

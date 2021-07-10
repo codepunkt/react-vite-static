@@ -46,6 +46,7 @@ jobs:
         with:
           urls: |
             ${{ steps.netlify.outputs.url }}
+          configPath: .github/workflows/.lighthouserc.js
           uploadArtifacts: true
           temporaryPublicStorage: true
 
@@ -64,10 +65,5 @@ jobs:
               issue_number,
               owner,
               repo, 
-              body: `### Links:
-                - [Preview Deployment](${netlifyUrl})
-                - [Lightouse Report](${lighthouseUrl})
-
-              ${JSON.stringify(summary)}
-              `
+              body: `### Links\n- [Preview Deployment](${netlifyUrl})\n- [Lightouse Report](${lighthouseUrl})\n\n${JSON.stringify(summary)}`
             });

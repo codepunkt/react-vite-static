@@ -59,12 +59,15 @@ jobs:
             const [netlifyUrl, lighthouseUrl] = Object.entries(
               JSON.parse('${{ steps.lighthouse.outputs.links }}')
             )[0];
+            const summary = JSON.parse('${{ steps.lighthouse.outputs.manifest }}')[0].summary;
             github.issues.createComment({
               issue_number,
               owner,
               repo, 
               body: `### Links:
-                - ${netlifyUrl}
-                - ${lighthouseUrl}
+                - [Preview Deployment](${netlifyUrl})
+                - [Lightouse Report](${lighthouseUrl})
+
+              ${JSON.stringify(summary)}
               `
             });

@@ -5,4 +5,4 @@ node_modules/
 .wilson/
 dist/
 coverage/
-codepunkt.de/
+packages/codepunkt.de/

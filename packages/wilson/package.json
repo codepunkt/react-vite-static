@@ -57,6 +57,7 @@
   },
   "dependencies": {
     "@codepunkt/wasm-layout-text": "^3.0.0",
+    "@mapbox/hast-util-to-jsx": "^1.0.0",
     "@preact/preset-vite": "^2.1.0",
     "acorn": "^8.1.1",
     "astring": "^1.7.4",
@@ -100,7 +101,7 @@
     "unified": "^9.2.1",
     "unist-util-is": "^5.1.0",
     "unist-util-visit": "^3.1.0",
-    "vite": "2.4.1",
+    "vite": "2.4.3",
     "zlib": "^1.0.5"
   },
   "devDependencies": {
@@ -114,7 +115,7 @@
     "@types/minimist": "^1.2.2",
     "@types/node": "^16.0.1",
     "@types/requestidlecallback": "^0.3.4",
-    "@types/rss": "^0.0.28",
+    "@types/rss": "^0.0.29",
     "@types/serve-handler": "^6.1.1",
     "jest": "^27.0.6",
     "serve": "^12.0.0",

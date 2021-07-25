@@ -22,7 +22,7 @@
     ]
   },
   "dependencies": {
-    "hoofd": "^1.2.2",
+    "hoofd": "^1.3.1",
     "preact": "^10.5.13",
     "preact-iso": "^2.0.3",
     "vscode-styled-components": "styled-components/vscode-styled-components"

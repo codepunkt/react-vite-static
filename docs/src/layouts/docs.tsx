@@ -5,7 +5,6 @@ import Header from '../components/header'
 import Link from '../components/link'
 import { useLocation } from 'preact-iso'
 import { useContext, useEffect, useState } from 'preact/hooks'
-import '../assets/global.scss'
 
 const ActiveSectionContext = createContext<string | null>(null)
 
@@ -96,7 +95,7 @@ const DocsLayout: FunctionalComponent<ContentPageProps> = ({
   }, [])
 
   return (
-    <div className={classes.container}>
+    <>
       <Header withLogo />
       <main className={classes.main}>
         <aside className={classes.toc}>
@@ -138,7 +137,7 @@ const DocsLayout: FunctionalComponent<ContentPageProps> = ({
           {children}
         </article>
       </main>
-    </div>
+    </>
   )
 }
 

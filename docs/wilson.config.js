@@ -12,10 +12,12 @@ module.exports = {
     twitterSite: '@wilsonjs_rocks',
     twitterCreator: '@code_punkt',
   },
-  pageLayouts: [
-    { pattern: 'docs/**/*', layout: 'docs' },
-    { pattern: '**', layout: 'default' },
-  ],
+  layouts: {
+    nestedLayouts: [
+      { pattern: 'docs/**/*', layout: 'docs' },
+      { pattern: '**', layout: 'default' },
+    ],
+  },
   opengraphImage: {
     background: '#ffffff',
     texts: [

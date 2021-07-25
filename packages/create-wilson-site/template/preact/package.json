@@ -13,8 +13,8 @@
   },
   "dependencies": {
     "hoofd": "^1.2.2",
-    "preact": "^10.5.13",
-    "preact-iso": "^1.1.1",
+    "preact": "^10.5.14",
+    "preact-iso": "^2.0.3",
     "wilson": "latest"
   },
   "devDependencies": {

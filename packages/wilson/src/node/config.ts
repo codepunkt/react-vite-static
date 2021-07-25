@@ -17,7 +17,10 @@ const configDefaults: SiteConfigDefaults = {
       timeout: 2000,
     },
   },
-  pageLayouts: [{ pattern: '**/*.md', layout: 'markdown' }],
+  layouts: {
+    pageLayout: 'page',
+    nestedLayouts: [{ pattern: '**/*.md', layout: 'markdown' }],
+  },
   pagination: {
     pageSize: 10,
     routeSuffix: (pageNumber: number): string =>
@@ -75,6 +78,7 @@ export function getConfig(
   cachedConfig = {
     ...configDefaults,
     ...config,
+    layouts: { ...configDefaults.layouts, ...config.layouts },
     pagination: { ...configDefaults.pagination, ...config.pagination },
     performance: {
       autoPrefetch: {

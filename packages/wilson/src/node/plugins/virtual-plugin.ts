@@ -1,9 +1,10 @@
 import { Plugin } from 'vite'
 import { LoadResult, ResolveIdResult } from 'rollup'
-import { transformJsx } from '../util.js'
+import { toRoot, transformJsx } from '../util.js'
 import { getConfig } from '../config.js'
 import { getPageSources } from '../state.js'
 import { PageType } from '../page.js'
+import { dirname, relative } from 'path'
 
 const virtualExportsPath = 'wilson/virtual'
 const clientEntryPath = '/@wilson/client.js'
@@ -34,6 +35,17 @@ const virtualPlugin = async (): Promise<Plugin> => {
 
       if (id === virtualExportsPath) {
         const pageSources = getPageSources()
+        const {
+          siteData,
+          layouts: { pageLayout },
+        } = getConfig()
+
+        const layoutImport = pageLayout
+          ? `import Layout from '${relative(
+              dirname(id),
+              toRoot(`./src/layouts/${pageLayout}`)
+            ).replace(/\\/g, '/')}';`
+          : `import { Fragment as Layout } from 'preact';`
 
         const lazyPageImports = pageSources
           .map((pageSource, i) =>
@@ -60,12 +72,14 @@ const virtualPlugin = async (): Promise<Plugin> => {
         const code = `
           import { h } from 'preact';
           import { lazy } from 'preact-iso';
+          ${layoutImport}
 
           ${lazyPageImports}
+          
           const routes = [${routes}];
-          const siteData = ${JSON.stringify(getConfig().siteData)};
+          const siteData = ${JSON.stringify(siteData)};
 
-          export { routes, siteData };
+          export { routes, siteData, Layout };
         `
 
         return transformJsx(code)

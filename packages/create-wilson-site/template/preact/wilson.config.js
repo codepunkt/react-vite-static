@@ -10,10 +10,9 @@ module.exports = {
     author: 'Author name',
     lang: 'en',
   },
-  pageLayouts: [
-    { pattern: 'blog/**/*', layout: 'blog' },
-    { pattern: '**', layout: 'default' },
-  ],
+  layouts: {
+    nestedLayouts: [{ pattern: 'blog/**/*', layout: 'blog' }],
+  },
   opengraphImage: {
     background: '#ffffff',
     texts: [

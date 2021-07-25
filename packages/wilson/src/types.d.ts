@@ -129,11 +129,6 @@ export interface Heading {
   slug: string
 }
 
-export type PageLayouts = Array<{
-  component: string
-  pattern?: string
-}>
-
 export interface OpengraphImageText {
   text: (page: Page) => string
   font: string
@@ -215,12 +210,17 @@ export interface PerformanceOptions {
   autoPrefetch?: AutoPrefetchOptions
 }
 
+export interface LayoutOptions {
+  pageLayout?: string
+  nestedLayouts?: { layout: string; pattern?: string }[]
+}
+
 /**
  * Optional site configuration.
  */
 export interface SiteConfigOptional {
   opengraphImage?: { background: string; texts: OpengraphImageText[] }
-  pageLayouts?: { layout: string; pattern?: string }[]
+  layouts?: LayoutOptions
   // @TODO move into PerformanceOptions under `performance`
   linkPreloadTest?: (route: string) => boolean
   taxonomies?: TaxonomyDefinition
@@ -238,14 +238,10 @@ export interface SiteConfigOptional {
 export type SiteConfigDefaults = Required<
   Pick<
     SiteConfigOptional,
-    | 'pageLayouts'
-    | 'taxonomies'
-    | 'feeds'
-    | 'syntaxHighlighting'
-    | 'performance'
-    | 'injectHead'
+    'taxonomies' | 'feeds' | 'syntaxHighlighting' | 'performance' | 'injectHead'
   >
 > & {
+  layouts: Required<LayoutOptions>
   pagination: Required<PaginationOptions>
   performance: Required<PerformanceOptions>
 }

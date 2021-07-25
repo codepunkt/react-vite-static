@@ -50,18 +50,20 @@ const pagesPlugin = async (): Promise<Plugin> => {
         throw new Error('kaput!')
       }
 
-      const { pageLayouts } = getConfig()
-      const pageLayout =
-        pageSource.frontmatter.layout ?? typeof pageLayouts === 'undefined'
+      const {
+        layouts: { nestedLayouts },
+      } = getConfig()
+      const nestedLayout =
+        pageSource.frontmatter.layout ?? typeof nestedLayouts === 'undefined'
           ? undefined
-          : pageLayouts.find(({ pattern = '**' }) => {
+          : nestedLayouts.find(({ pattern = '**' }) => {
               return minimatch(pageSource.relativePath, pattern)
             })?.layout
 
-      const layoutImport = pageLayout
+      const layoutImport = nestedLayout
         ? `import Layout from '${relative(
             dirname(id),
-            toRoot(`./src/layouts/${pageLayout}`)
+            toRoot(`./src/layouts/${nestedLayout}`)
           ).replace(/\\/g, '/')}';`
         : `import { Fragment as Layout } from 'preact';`
 
